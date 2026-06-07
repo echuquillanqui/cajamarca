@@ -1,6 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\MedicalController;
+use App\Http\Controllers\NurseController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\TreatmentController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -24,4 +31,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+    Route::resource('patients', PatientController::class);
+    Route::resource('orders', OrderController::class);
+    Route::resource('histories', HistoryController::class);
+    Route::resource('medicals', MedicalController::class);
+    Route::resource('nurses', NurseController::class);
+    Route::resource('treatments', TreatmentController::class);
+    Route::resource('laboratories', LaboratoryController::class);
 });

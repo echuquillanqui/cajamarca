@@ -29,7 +29,7 @@
                             <i class="fa-solid fa-user-injured me-1"></i> Pacientes
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="pacientesDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-list me-2 text-muted"></i> Ver Expedientes</a></li>
+                            <li><a class="dropdown-item" href="{{ route('patients.index') }}"><i class="fa-solid fa-list me-2 text-muted"></i> Ver Expedientes</a></li>
                             <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user-plus me-2 text-muted"></i> Registrar Paciente</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#"><i class="fa-solid fa-wave-square me-2 text-muted"></i> Grupos Sanguíneos</a></li>
@@ -41,9 +41,7 @@
                             <i class="fa-solid fa-kit-medical me-1"></i> Hemodiálisis
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="sesionesDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-calendar-check me-2 text-muted"></i> Programar Turnos</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-capsules me-2 text-muted"></i> Monitoreo de Sillones</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-file-medical me-2 text-muted"></i> Insumos y Filtros</a></li>
+                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-calendar-check me-2 text-muted"></i> Historia Inicial</a></li>
                         </ul>
                     </li>
 

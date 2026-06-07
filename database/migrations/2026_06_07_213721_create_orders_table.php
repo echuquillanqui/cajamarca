@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->comment('Usuario responsable de la orden');
+            $table->date('fecha')->nullable();
+            $table->string('codigo', 50)->nullable()->unique();
+            $table->enum('estado', ['PENDIENTE', 'EN_PROCESO', 'FINALIZADA', 'ANULADA'])->default('PENDIENTE');
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }
