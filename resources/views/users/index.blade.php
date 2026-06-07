@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4" x-data="userModule">
+<div class="container-fluid px-4" x-data="userModule()">
     
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 @foreach ($errors->all() as $error)
-                    toastr.error("{{ $error }}", "Error de Validación de Datos");
+                    toastr.error(@js($error), 'Error de Validación de Datos');
                 @endforeach
             });
         </script>
@@ -264,8 +264,8 @@
                     console.error("Bootstrap no está cargado globalmente en window.bootstrap");
                 }
                 
-                // Inicializamos TomSelect de forma segura
-                if (document.getElementById('tom-role-select')) {
+                // Inicializamos TomSelect de forma segura cuando el CDN está disponible
+                if (typeof TomSelect !== 'undefined' && document.getElementById('tom-role-select')) {
                     this.tomSelectInstance = new TomSelect('#tom-role-select', {
                         create: false,
                         controlInput: null,
@@ -314,6 +314,12 @@
             },
 
             deleteUser(routeUrl, userName) {
+                const submitDelete = () => {
+                    let f = document.getElementById('hidden-delete-form');
+                    f.action = routeUrl;
+                    f.submit();
+                };
+
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: '¿Confirmar eliminación?',
@@ -328,11 +334,15 @@
                         customClass: { popup: 'rounded-4' }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            let f = document.getElementById('hidden-delete-form');
-                            f.action = routeUrl;
-                            f.submit();
+                            submitDelete();
                         }
                     });
+
+                    return;
+                }
+
+                if (window.confirm(`¿Confirmar eliminación de ${userName}?`)) {
+                    submitDelete();
                 }
             }
         };

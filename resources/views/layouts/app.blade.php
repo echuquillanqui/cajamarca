@@ -133,10 +133,11 @@
             "closeButton": true
         };
 
-        @if(session('success')) toastr.success("{{ session('success') }}"); @endif
-        @if(session('error')) toastr.error("{{ session('error') }}"); @endif
+        @if(session('success')) toastr.success(@js(session('success'))); @endif
+        @if(session('error')) toastr.error(@js(session('error'))); @endif
     </script>
 
     @stack('scripts')
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

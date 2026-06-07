@@ -29,7 +29,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:255',
             'username' => 'nullable|string|max:50|unique:users,username',
             'dni'      => 'nullable|string|digits:8|unique:users,dni',
-            'cmp'      => 'nullable|string|max:10|unique:users,cmp',
+            'cmp'      => 'required_if:role,medico|nullable|string|max:10|unique:users,cmp',
             'rne'      => 'nullable|string|max:10|unique:users,rne',
             'role'     => 'required|in:superadmin,admin,medico,enfermera',
             'state'    => 'required|in:ACTIVO,INACTIVO',
@@ -37,6 +37,7 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
         ], [
             'dni.digits' => 'El número de DNI debe contener exactamente 8 dígitos.',
+            'cmp.required_if' => 'El CMP es obligatorio para registrar personal médico.',
             'unique'     => 'El parámetro ingresado en :attribute ya se encuentra registrado en el sistema clínico.'
         ]);
 
@@ -56,7 +57,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:255',
             'username' => ['nullable', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
             'dni'      => ['nullable', 'string', 'digits:8', Rule::unique('users')->ignore($user->id)],
-            'cmp'      => ['nullable', 'string', 'max:10', Rule::unique('users')->ignore($user->id)],
+            'cmp'      => ['required_if:role,medico', 'nullable', 'string', 'max:10', Rule::unique('users')->ignore($user->id)],
             'rne'      => ['nullable', 'string', 'max:10', Rule::unique('users')->ignore($user->id)],
             'role'     => 'required|in:superadmin,admin,medico,enfermera',
             'state'    => 'required|in:ACTIVO,INACTIVO',
@@ -64,6 +65,7 @@ class UserController extends Controller
             'password' => 'nullable|string|min:6', // Opcional al momento de editar
         ], [
             'dni.digits' => 'El número de DNI debe contener exactamente 8 dígitos.',
+            'cmp.required_if' => 'El CMP es obligatorio para registrar personal médico.',
             'unique'     => 'Los datos de este :attribute ya pertenecen a otro miembro del personal.'
         ]);
 

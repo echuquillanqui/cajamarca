@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('dni')->unique()->nullable();
             $table->string('cmp')->unique()->nullable();
             $table->string('rne')->unique()->nullable();
-            $table->string('role')->enum(['superadmin', 'admin', 'medico', 'enfermera'])->default('medico');
+            $table->enum('role', ['superadmin', 'admin', 'medico', 'enfermera'])->default('medico');
             $table->enum('state', ['ACTIVO', 'INACTIVO'])->default('ACTIVO');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
