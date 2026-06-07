@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -26,6 +27,28 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/home';
+
+    /**
+     * Usa un único campo de acceso que acepta correo electrónico o nombre de usuario.
+     */
+    public function username(): string
+    {
+        return 'login';
+    }
+
+    /**
+     * Construye las credenciales según el valor ingresado en el login.
+     */
+    protected function credentials(Request $request): array
+    {
+        $login = $request->input($this->username());
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        return [
+            $field => $login,
+            'password' => $request->input('password'),
+        ];
+    }
 
     /**
      * Create a new controller instance.

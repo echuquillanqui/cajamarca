@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid px-4" x-data="userModule()">
-    
+
     @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -33,10 +33,10 @@
                 <span class="input-group-text bg-white border-end-0 text-muted">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <input type="text" 
-                       x-model="search" 
-                       @input="page = 1" 
-                       class="form-control border-start-0 ps-0" 
+                <input type="text"
+                       x-model="search"
+                       @input="page = 1"
+                       class="form-control border-start-0 ps-0"
                        placeholder="Buscar por nombre, DNI, CMP o correo...">
             </div>
         </div>
@@ -109,18 +109,18 @@
                                 </template>
                             </td>
                             <td class="text-end pe-4">
-                                <button type="button" class="btn btn-sm btn-light border rounded-3 me-1 text-info" 
+                                <button type="button" class="btn btn-sm btn-light border rounded-3 me-1 text-info"
                                         @click="openEdit(user)" title="Editar Ficha Clínica">
                                     <i class="fa-solid fa-user-pen"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-light border rounded-3 text-danger" 
+                                <button type="button" class="btn btn-sm btn-light border rounded-3 text-danger"
                                         @click="deleteUser('/users/' + user.id, user.name)" title="Revocar Acceso del Sistema">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </td>
                         </tr>
                     </template>
-                    
+
                     <tr x-show="filteredUsers().length === 0">
                         <td colspan="6" class="text-center py-5 text-muted">
                             <i class="fa-solid fa-user-slash display-6 mb-2 d-block text-black-50 opacity-25"></i>
@@ -167,7 +167,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+
                 <form :action="isEdit ? '/users/' + form.id : '{{ route('users.store') }}'" method="POST" autocomplete="off">
                     @csrf
                     <template x-if="isEdit">
@@ -200,7 +200,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Rol Funcional</label>
-                                <select name="role" x-model="form.role" class="form-select rounded-3" id="tom-role-select" required>
+                                <select name="role" x-model="form.role" class="form-select rounded-3" required>
                                     <option value="medico">Médico Nefrólogo</option>
                                     <option value="enfermera">Enfermería</option>
                                     <option value="admin">Administrador del Sistema</option>
@@ -225,7 +225,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer bg-light border-top-0 py-3 rounded-bottom-4">
                         <button type="button" class="btn btn-light border px-4 rounded-3 text-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary px-4 rounded-3 fw-bold" x-text="isEdit ? 'Guardar Cambios' : 'Confirmar Alta'"></button>
@@ -249,11 +249,10 @@
             search: '',
             page: 1,
             perPage: 10,
-            usersList: @json($users), 
+            usersList: @json($users),
 
             isEdit: false,
             modalInstance: null,
-            tomSelectInstance: null,
             form: { id: '', name: '', username: '', dni: '', cmp: '', rne: '', role: 'medico', state: 'ACTIVO', email: '' },
 
             init() {
@@ -263,15 +262,7 @@
                 } else {
                     console.error("Bootstrap no está cargado globalmente en window.bootstrap");
                 }
-                
-                // Inicializamos TomSelect de forma segura cuando el CDN está disponible
-                if (typeof TomSelect !== 'undefined' && document.getElementById('tom-role-select')) {
-                    this.tomSelectInstance = new TomSelect('#tom-role-select', {
-                        create: false,
-                        controlInput: null,
-                        dropdownParent: 'body'
-                    });
-                }
+
             },
 
             filteredUsers() {
@@ -302,14 +293,12 @@
             openCreate() {
                 this.isEdit = false;
                 this.form = { id: '', name: '', username: '', dni: '', cmp: '', rne: '', role: 'medico', state: 'ACTIVO', email: '' };
-                if (this.tomSelectInstance) this.tomSelectInstance.setValue('medico');
                 if (this.modalInstance) this.modalInstance.show();
             },
 
             openEdit(user) {
                 this.isEdit = true;
                 this.form = Object.assign({}, user);
-                if (this.tomSelectInstance) this.tomSelectInstance.setValue(user.role);
                 if (this.modalInstance) this.modalInstance.show();
             },
 

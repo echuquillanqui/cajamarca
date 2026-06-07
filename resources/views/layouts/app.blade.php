@@ -21,11 +21,11 @@
 
     <style>
         :root {
-            --hc-primary: #0a66c2;       
-            --hc-secondary: #00a896;     
-            --hc-bg: #f4f7f6;            
+            --hc-primary: #0a66c2;
+            --hc-secondary: #00a896;
+            --hc-bg: #f4f7f6;
             --hc-card-bg: #ffffff;
-            --hc-text: #2b3a42;          
+            --hc-text: #2b3a42;
         }
 
         body {
@@ -38,7 +38,7 @@
         }
 
         .navbar-custom {
-            background: linear-gradient(135deg, #0f3057 0%, #164e63 100%); 
+            background: linear-gradient(135deg, #0f3057 0%, #164e63 100%);
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             padding: 0.8rem 1rem;
         }
@@ -102,11 +102,31 @@
             text-align: center;
             margin-top: auto;
         }
+
+
+        /* Bootstrap también define `.toast`; se refuerzan los colores de estado de Toastr. */
+        #toast-container > .toast {
+            color: #ffffff !important;
+            border: 0 !important;
+            box-shadow: 0 10px 25px rgba(15, 48, 87, 0.18) !important;
+            opacity: 1 !important;
+        }
+
+        #toast-container > .toast-success { background-color: #198754 !important; }
+        #toast-container > .toast-error { background-color: #dc3545 !important; }
+        #toast-container > .toast-info { background-color: #0dcaf0 !important; color: #102a43 !important; }
+        #toast-container > .toast-warning { background-color: #ffc107 !important; color: #102a43 !important; }
+
+        #toast-container > .toast .toast-title,
+        #toast-container > .toast .toast-message,
+        #toast-container > .toast .toast-close-button {
+            color: inherit !important;
+        }
     </style>
 </head>
 <body>
     <div id="app" style="display: flex; flex-direction: column; min-height: 100vh;">
-        
+
         @include('layouts.navigation')
 
         <main class="main-content">
