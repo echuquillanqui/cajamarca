@@ -4,8 +4,8 @@
 <div class="container-fluid px-4" x-data="{ 
     tab: 'general',
     biopsia: {{ $history->biopsia_renal ? 'true' : 'false' }},
-    antecedentes: {{ $history->antecedentes_personales ? $history->antecedentes_personales : '{ diabetes: false, hta: false, medicacion_previa: \'\' }' }},
-    diagnosticos: {{ $history->diagnostico ? json_encode($history->diagnostico) : '[{ cie10: \'\', descripcion: \'\' }]' }},
+    antecedentes: @js($history->antecedentes_personales ?? ['diabetes' => false, 'hta' => false, 'medicacion_previa' => '']),
+    diagnosticos: @js($history->diagnostico ?? [['cie10' => '', 'descripcion' => '']]),
     addDiag() { this.diagnosticos.push({ cie10: '', descripcion: '' }) },
     removeDiag(index) { this.diagnosticos.splice(index, 1) }
 }">
@@ -14,7 +14,7 @@
         <div class="card-body p-4 d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="fw-bold text-dark mb-1"><i class="fa-solid fa-pen-to-square text-info me-2"></i>Modificar Expediente Clínico #{{ $history->id }}</h4>
-                <p class="text-muted small mb-0">Paciente: <span class="text-dark fw-bold">{{ $history->patient->name }}</span></p>
+                <p class="text-muted small mb-0">Paciente: <span class="text-dark fw-bold">{{ $history->patient->nombre }}</span></p>
             </div>
             <a href="{{ route('histories.index') }}" class="btn btn-light border px-3 rounded-3 small text-secondary">
                 Cancelar Cambios
@@ -40,7 +40,7 @@
                         <label class="form-label small fw-bold text-secondary">Paciente Evaluado</label>
                         <select name="patient_id" class="form-select rounded-3 ts-edit" required>
                             @foreach($patients as $patient)
-                                <option value="{{ $patient->id }}" {{ $history->patient_id == $patient->id ? 'selected' : '' }}>{{ $patient->name }}</option>
+                                <option value="{{ $patient->id }}" {{ $history->patient_id == $patient->id ? 'selected' : '' }}>{{ $patient->nombre }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -48,13 +48,13 @@
                         <label class="form-label small fw-bold text-secondary">Orden Médica Vinculada</label>
                         <select name="order_id" class="form-select rounded-3 ts-edit" required>
                             @foreach($orders as $order)
-                                <option value="{{ $order->id }}" {{ $history->order_id == $order->id ? 'selected' : '' }}>Orden #{{ $order->id }} - {{ $order->tipo_procedimiento }}</option>
+                                <option value="{{ $order->id }}" {{ $history->order_id == $order->id ? 'selected' : '' }}>Orden #{{ $order->id }}{{ $order->codigo ? ' - '.$order->codigo : '' }}{{ $order->fecha ? ' - '.$order->fecha->format('d/m/Y') : '' }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-bold text-secondary">Fecha Ingreso</label>
-                        <input type="date" name="fecha_ingreso_hd" class="form-control rounded-3" value="{{ $history->fecha_ingreso_hd }}" required>
+                        <input type="date" name="fecha_ingreso_hd" class="form-control rounded-3" value="{{ optional($history->fecha_ingreso_hd)->format('Y-m-d') }}" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-bold text-secondary">Servicio Origen</label>

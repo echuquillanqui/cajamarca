@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\History;
-use App\Models\Patient;
 use App\Models\Order;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,14 +24,63 @@ class HistoryController extends Controller
 
     public function create()
     {
-        $patients = Patient::active()->get(); // Suposición de scope activo
-        $orders = Order::where('status', 'PENDIENTE')->get(); 
+        $patients = Patient::orderBy('nombre')->get();
+        $orders = Order::where('estado', 'PENDIENTE')->orderByDesc('fecha')->get();
+
         return view('histories.create', compact('patients', 'orders'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $this->prepareJsonFields($request);
+
+        $validated = $request->validate($this->validationRules());
+        $validated = $this->normalizeCheckboxes($request, $validated);
+        $validated['user_id'] = Auth::id();
+
+        History::create($validated);
+
+        return redirect()->route('histories.index')->with('success', 'Historia Clínica registrada correctamente.');
+    }
+
+    public function show(History $history)
+    {
+        $history->load(['patient', 'user']);
+        return view('histories.show', compact('history'));
+    }
+
+    public function edit(History $history)
+    {
+        $patients = Patient::orderBy('nombre')->get();
+        $orders = Order::where('estado', 'PENDIENTE')
+            ->orWhere('id', $history->order_id)
+            ->orderByDesc('fecha')
+            ->get();
+
+        return view('histories.edit', compact('history', 'patients', 'orders'));
+    }
+
+    public function update(Request $request, History $history)
+    {
+        $this->prepareJsonFields($request);
+
+        $validated = $request->validate($this->validationRules());
+        $validated = $this->normalizeCheckboxes($request, $validated);
+
+        $history->update($validated);
+
+        return redirect()->route('histories.index')->with('success', 'Historia Clínica actualizada con éxito.');
+    }
+
+    public function destroy(History $history)
+    {
+        $history->delete();
+        return redirect()->route('histories.index')->with('success', 'El expediente clínico ha sido eliminado del sistema.');
+    }
+
+    private function validationRules(): array
+    {
+        return [
             'order_id' => 'required|exists:orders,id',
             'patient_id' => 'required|exists:patients,id',
             'fecha_ingreso_hd' => 'required|date',
@@ -48,7 +97,7 @@ class HistoryController extends Controller
             'antecedentes_personales' => 'nullable|array',
             'antecedentes_familiares' => 'nullable|string',
             'alergias' => 'nullable|string',
-            'biopsia_renal' => 'required|boolean',
+            'biopsia_renal' => 'nullable|boolean',
             'biopsia_renal_anio' => 'nullable|string|max:4',
             'biopsia_renal_resultado' => 'nullable|string|max:255',
             'pa' => 'nullable|string|max:15',
@@ -103,57 +152,32 @@ class HistoryController extends Controller
             'pendientes' => 'nullable|string',
             'peso_seco' => 'nullable|numeric|between:0,999999.99',
             'diuresis_alta' => 'nullable|string|max:50',
-        ]);
+        ];
+    }
 
-        // Manejo manual de Booleanos ausentes en los checkbox de HTML
+    private function prepareJsonFields(Request $request): void
+    {
+        foreach (['antecedentes_personales', 'diagnostico'] as $field) {
+            $value = $request->input($field);
+
+            if (is_string($value) && $value !== '') {
+                $decoded = json_decode($value, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $request->merge([$field => $decoded]);
+                }
+            }
+        }
+    }
+
+    private function normalizeCheckboxes(Request $request, array $validated): array
+    {
         $checkboxes = ['biopsia_renal', 'd_peritoneal', 't_renal', 'hiv', 'hbsag', 'anti_hbc', 'vhc', 'anti_hbs', 'rpr'];
-        foreach($checkboxes as $cb) {
-            $validated[$cb] = $request->has($cb) ? true : false;
+
+        foreach ($checkboxes as $checkbox) {
+            $validated[$checkbox] = $request->boolean($checkbox);
         }
 
-        $validated['user_id'] = Auth::id();
-
-        History::create($validated);
-
-        return redirect()->route('histories.index')->with('success', 'Historia Clínica registrada correctamente.');
-    }
-
-    public function show(History $history)
-    {
-        $history->load(['patient', 'user']);
-        return view('histories.show', compact('history'));
-    }
-
-    public function edit(History $history)
-    {
-        $patients = Patient::all();
-        $orders = Order::all();
-        return view('histories.edit', compact('history', 'patients', 'orders'));
-    }
-
-    public function update(Request $request, History $history)
-    {
-        // Mismas reglas de validación que el store
-        $validated = $request->validate([
-            'order_id' => 'required|exists:orders,id',
-            'patient_id' => 'required|exists:patients,id',
-            'fecha_ingreso_hd' => 'required|date',
-            // ... (Se repiten todas las validaciones de manera exacta para consistencia del dato)
-        ]);
-
-        $checkboxes = ['biopsia_renal', 'd_peritoneal', 't_renal', 'hiv', 'hbsag', 'anti_hbc', 'vhc', 'anti_hbs', 'rpr'];
-        foreach($checkboxes as $cb) {
-            $validated[$cb] = $request->has($cb) ? true : false;
-        }
-
-        $history->update($validated);
-
-        return redirect()->route('histories.index')->with('success', 'Historia Clínica actualizada con éxito.');
-    }
-
-    public function destroy(History $history)
-    {
-        $history->delete();
-        return redirect()->route('histories.index')->with('success', 'El expediente clínico ha sido eliminado del sistema.');
+        return $validated;
     }
 }

@@ -309,6 +309,7 @@
             openEdit(patient) {
                 this.isEdit = true;
                 this.form = Object.assign({}, patient);
+                this.form.fecha_nacimiento = this.normalizeDate(patient.fecha_nacimiento);
                 if (this.modalInstance) this.modalInstance.show();
             },
 
@@ -335,13 +336,21 @@
                 }
             },
 
-            formatDate(dateString) {
+            normalizeDate(dateString) {
                 if (!dateString) return '';
-                const parts = dateString.split('-');
+                return String(dateString).substring(0, 10);
+            },
+
+            formatDate(dateString) {
+                const normalized = this.normalizeDate(dateString);
+                if (!normalized) return '';
+
+                const parts = normalized.split('-');
                 if (parts.length === 3) {
                     return `${parts[2]}/${parts[1]}/${parts[0]}`;
                 }
-                return dateString;
+
+                return normalized;
             }
         }));
     });

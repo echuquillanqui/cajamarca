@@ -30,7 +30,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="pacientesDropdown">
                             <li><a class="dropdown-item" href="{{ route('patients.index') }}"><i class="fa-solid fa-list me-2 text-muted"></i> Ver Expedientes</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user-plus me-2 text-muted"></i> Registrar Paciente</a></li>
+                            <li><a class="dropdown-item" href="{{ route('patients.index') }}"><i class="fa-solid fa-user-plus me-2 text-muted"></i> Registrar Paciente</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#"><i class="fa-solid fa-wave-square me-2 text-muted"></i> Grupos Sanguíneos</a></li>
                         </ul>

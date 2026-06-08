@@ -40,7 +40,7 @@
                         <label class="form-label small fw-bold text-secondary">Paciente Evaluado</label>
                         <select name="patient_id" class="form-select rounded-3 id-select-ts" required>
                             @foreach($patients as $patient)
-                                <option value="{{ $patient->id }}">{{ $patient->name }}</option>
+                                <option value="{{ $patient->id }}">{{ $patient->nombre }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -48,7 +48,7 @@
                         <label class="form-label small fw-bold text-secondary">Orden Médica Vinculada</label>
                         <select name="order_id" class="form-select rounded-3 order-select-ts" required>
                             @foreach($orders as $order)
-                                <option value="{{ $order->id }}">Orden #{{ $order->id }} - {{ $order->tipo_procedimiento }}</option>
+                                <option value="{{ $order->id }}">Orden #{{ $order->id }}{{ $order->codigo ? ' - '.$order->codigo : '' }}{{ $order->fecha ? ' - '.$order->fecha->format('d/m/Y') : '' }}</option>
                             @endforeach
                         </select>
                     </div>

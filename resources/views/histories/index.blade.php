@@ -41,9 +41,9 @@
                 </thead>
                 <tbody>
                     @foreach($histories as $history)
-                    <tr x-show="search === '' || '{{ strtolower($history->patient->name) }}'.includes(search.toLowerCase()) || '{{ strtolower($history->user->name) }}'.includes(search.toLowerCase())">
+                    <tr x-show="search === '' || '{{ strtolower($history->patient->nombre) }}'.includes(search.toLowerCase()) || '{{ strtolower($history->user->name) }}'.includes(search.toLowerCase())">
                         <td class="ps-4">
-                            <div class="fw-bold text-dark">{{ $history->patient->name }}</div>
+                            <div class="fw-bold text-dark">{{ $history->patient->nombre }}</div>
                             <span class="text-muted small">ID Paciente: #{{ $history->patient_id }}</span>
                         </td>
                         <td>
@@ -73,7 +73,7 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                                 <button type="button" class="btn btn-light border text-danger" title="Eliminar Registro"
-                                        @click="confirmDelete('{{ route('histories.destroy', $history->id) }}', '{{ $history->patient->name }}')">
+                                        @click="confirmDelete('{{ route('histories.destroy', $history->id) }}', '{{ $history->patient->nombre }}')">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>

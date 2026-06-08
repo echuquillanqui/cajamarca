@@ -7,7 +7,7 @@
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <span class="text-uppercase text-primary small fw-bold tracking-wider">Historial Clínico Consolidado</span>
-                <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-id-card text-secondary me-2"></i>Expediente de {{ $history->patient->name }}</h4>
+                <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-id-card text-secondary me-2"></i>Expediente de {{ $history->patient->nombre }}</h4>
             </div>
             <div>
                 <button onclick="window.print()" class="btn btn-light border px-3 rounded-3 small me-2">

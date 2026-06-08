@@ -31,7 +31,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
-    Route::resource('patients', PatientController::class);
+    Route::resource('patients', PatientController::class)->except(['create', 'edit', 'show']);
     Route::resource('orders', OrderController::class);
     Route::resource('histories', HistoryController::class);
     Route::resource('medicals', MedicalController::class);
