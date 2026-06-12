@@ -253,7 +253,8 @@
             search: '',
             page: 1,
             perPage: 10,
-            patientsList: @json($patients),
+            // Usamos una colección vacía como respaldo si por algún motivo la variable llega nula
+            patientsList: @json($patients ?? []),
 
             isEdit: false,
             modalInstance: null,
@@ -279,8 +280,8 @@
                 let query = this.search.toLowerCase().trim();
                 return this.patientsList.filter(p => {
                     return (p.nombre && p.nombre.toLowerCase().includes(query)) ||
-                           (p.dni && p.dni.includes(query)) ||
-                           (p.telefono && p.telefono.includes(query));
+                           (p.dni && String(p.dni).includes(query)) ||
+                           (p.telefono && String(p.telefono).includes(query));
                 });
             },
 
@@ -309,7 +310,6 @@
             openEdit(patient) {
                 this.isEdit = true;
                 this.form = Object.assign({}, patient);
-                this.form.fecha_nacimiento = this.normalizeDate(patient.fecha_nacimiento);
                 if (this.modalInstance) this.modalInstance.show();
             },
 
@@ -336,23 +336,15 @@
                 }
             },
 
-            normalizeDate(dateString) {
-                if (!dateString) return '';
-                return String(dateString).substring(0, 10);
-            },
-
             formatDate(dateString) {
-                const normalized = this.normalizeDate(dateString);
-                if (!normalized) return '';
-
-                const parts = normalized.split('-');
+                if (!dateString) return '';
+                const parts = dateString.split('-');
                 if (parts.length === 3) {
                     return `${parts[2]}/${parts[1]}/${parts[0]}`;
                 }
-
-                return normalized;
+                return dateString;
             }
         }));
     });
 </script>
-@endsection
+@endpush

@@ -147,8 +147,8 @@
             <div class="card-header bg-white py-3 fw-bold text-dark"><i class="fa-solid fa-code-fork me-2 text-primary"></i>Especificación del Acceso Vascular Activo</div>
             <div class="card-body p-4">
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">Tipo de Acceso Primario</label>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-secondary">Tipo de Acceso</label>
                         <select name="tipo" class="form-select rounded-3">
                             <option value="">-- SELECCIONE --</option>
                             <option value="CVC TUNELIZADO">CVC TUNELIZADO</option>
@@ -157,9 +157,54 @@
                             <option value="INJERTO">INJERTO</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label small fw-bold text-secondary">Localización Anatómica</label>
                         <select name="localizacion" class="form-select rounded-3">
+                            <option value="">-- SELECCIONE --</option>
+                            <option value="RADIAL">RADIAL</option>
+                            <option value="HUMERAL">HUMERAL</option>
+                            <option value="CERVICAL">CERVICAL</option>
+                            <option value="FEMORAL">FEMORAL</option>
+                            <option value="OTROS">OTROS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-secondary">Lado Corpóreo</label>
+                        <select name="lado" class="form-select rounded-3">
+                            <option value="">-- SELECCIONE --</option>
+                            <option value="DERECHA">DERECHA</option>
+                            <option value="IZQUIERDA">IZQUIERDA</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-secondary">Estado Actual</label>
+                        <select name="estado" class="form-select rounded-3">
+                            <option value="">-- SELECCIONE --</option>
+                            <option value="BUENO">BUENO</option>
+                            <option value="REGULAR">REGULAR</option>
+                            <option value="MALO">MALO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h6 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-circle-2 me-1"></i> Acceso Vascular Secundario (Si aplica)</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">Tipo de Acceso 2</label>
+                        <select name="tipo2" class="form-select rounded-3">
+                            <option value="">-- SELECCIONE --</option>
+                            <option value="CVC TUNELIZADO">CVC TUNELIZADO</option>
+                            <option value="CVC TEMPORAL">CVC TEMPORAL</option>
+                            <option value="FAV">FAV (Fístula)</option>
+                            <option value="INJERTO">INJERTO</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">Localización Anatómica 2</label>
+                        <select name="localizacion2" class="form-select rounded-3">
+                            <option value="">-- SELECCIONE --</option>
                             <option value="RADIAL">RADIAL</option>
                             <option value="HUMERAL">HUMERAL</option>
                             <option value="CERVICAL">CERVICAL</option>
@@ -168,14 +213,15 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-secondary">Lado Corpóreo</label>
-                        <select name="lado" class="form-select rounded-3">
+                        <label class="form-label small fw-bold text-secondary">Lado Corpóreo 2</label>
+                        <select name="lado2" class="form-select rounded-3">
+                            <option value="">-- SELECCIONE --</option>
                             <option value="DERECHA">DERECHA</option>
                             <option value="IZQUIERDA">IZQUIERDA</option>
                         </select>
                     </div>
                     
-                    <div class="col-md-12"><hr class="my-2"></div>
+                    <div class="col-md-12"><hr class="my-3"></div>
 
                     <div class="col-md-3 pt-4">
                         <div class="form-check form-switch">
