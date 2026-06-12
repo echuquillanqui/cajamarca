@@ -41,7 +41,10 @@
                             <i class="fa-solid fa-kit-medical me-1"></i> Hemodiálisis
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="sesionesDropdown">
-                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-calendar-check me-2 text-muted"></i> Historia Inicial</a></li>
+                            <li><a class="dropdown-item" href="{{ route('orders.index') }}"><i class="fa-solid fa-list me-2 text-muted"></i> Ordenes</a></li>
+                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-file me-2 text-muted"></i> Historia Inicial</a></li>
+                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-pill me-2 text-muted"></i> Hemodialisis</a></li>
+                            <li><a class="dropdown-item" href=""><i class="fa-solid fa-calendar-check me-2 text-muted"></i> Laboratorio</a></li>
                         </ul>
                     </li>
 

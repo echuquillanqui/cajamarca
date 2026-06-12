@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->comment('Usuario responsable de la orden');
             $table->date('fecha')->nullable();
             $table->string('codigo', 50)->nullable()->unique();
+            $table->enum('tipo', ['HISTORIA','HEMODIALISIS', 'LABORATORIO'])->default('HISTORIA');
             $table->enum('estado', ['PENDIENTE', 'EN_PROCESO', 'FINALIZADA', 'ANULADA'])->default('PENDIENTE');
             $table->text('observaciones')->nullable();
             $table->timestamps();

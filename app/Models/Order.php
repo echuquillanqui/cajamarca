@@ -12,12 +12,21 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'patient_id',
+        'user_id',
+        'fecha',
+        'codigo',
+        'tipo',
+        'estado',
+        'observaciones',
+    ];
 
     protected $casts = [
         'fecha' => 'date',
     ];
 
+    // Relaciones principales
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);
@@ -25,22 +34,24 @@ class Order extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function history(): HasOne
+    // Relación con HISTORIA (Asumiendo relación 1 a 1 o 1 a muchos, ajustamos a HasMany o HasOne según se requiera)
+    public function histories(): HasMany
     {
-        return $this->hasOne(History::class);
+        return $this->hasMany(History::class);
     }
 
-    public function medical(): HasOne
+    // Relaciones con HEMODIALISIS (medicals, nurses, treatments)
+    public function medicals(): HasMany
     {
-        return $this->hasOne(Medical::class);
+        return $this->hasMany(Medical::class);
     }
 
-    public function nurse(): HasOne
+    public function nurses(): HasMany
     {
-        return $this->hasOne(Nurse::class);
+        return $this->hasMany(Nurse::class);
     }
 
     public function treatments(): HasMany
@@ -48,6 +59,7 @@ class Order extends Model
         return $this->hasMany(Treatment::class);
     }
 
+    // Relación con LABORATORIO
     public function laboratories(): HasMany
     {
         return $this->hasMany(Laboratory::class);

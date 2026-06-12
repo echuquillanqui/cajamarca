@@ -7,7 +7,7 @@
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <span class="text-uppercase text-primary small fw-bold tracking-wider">Historial Clínico Consolidado</span>
-                <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-id-card text-secondary me-2"></i>Expediente de {{ $history->patient->nombre }}</h4>
+                <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-id-card text-secondary me-2"></i>Expediente de {{ $history->patient?->nombre ?? 'Paciente no disponible' }}</h4>
             </div>
             <div>
                 <button onclick="window.print()" class="btn btn-light border px-3 rounded-3 small me-2">
@@ -48,15 +48,26 @@
                 <div class="card-header bg-white fw-bold text-dark"><i class="fa-solid fa-shield-virus me-2 text-danger"></i>Seguridad Biológica (Serología)</div>
                 <div class="card-body p-4">
                     <div class="d-flex flex-column gap-2">
-                        <div class="d-flex justify-content-between p-2 rounded border {{ $history->hiv ? 'bg-danger bg-opacity-10 text-danger' : 'bg-light text-dark' }}">
-                            <span class="small fw-semibold">Tamizaje VIH:</span><span class="small fw-bold">{{ $history->hiv ? 'REACTIVO (+)' : 'NO REACTIVO (-)' }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between p-2 rounded border {{ $history->hbsag ? 'bg-danger bg-opacity-10 text-danger' : 'bg-light text-dark' }}">
-                            <span class="small fw-semibold">Ag Superficie Hep B (HBsAg):</span><span class="small fw-bold">{{ $history->hbsag ? 'REACTIVO (+)' : 'NO REACTIVO (-)' }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between p-2 rounded border {{ $history->vhc ? 'bg-danger bg-opacity-10 text-danger' : 'bg-light text-dark' }}">
-                            <span class="small fw-semibold">Hepatitis C (VHC):</span><span class="small fw-bold">{{ $history->vhc ? 'REACTIVO (+)' : 'NO REACTIVO (-)' }}</span>
-                        </div>
+                        @foreach(['hiv' => 'Tamizaje VIH', 'hbsag' => 'Ag Superficie Hep B (HBsAg)', 'anti_hbc' => 'Anti-HBc', 'vhc' => 'Hepatitis C (VHC)', 'anti_hbs' => 'Anti-HBs', 'rpr' => 'RPR / Sífilis'] as $field => $label)
+                            <div class="d-flex justify-content-between p-2 rounded border {{ $history->{$field} ? 'bg-danger bg-opacity-10 text-danger' : 'bg-light text-dark' }}">
+                                <span class="small fw-semibold">{{ $label }}:</span><span class="small fw-bold">{{ $history->{$field} ? 'REACTIVO (+)' : 'NO REACTIVO (-)' }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-white fw-bold text-dark"><i class="fa-solid fa-code-fork me-2 text-primary"></i>Accesos y Terapias Previas</div>
+                <div class="card-body p-4 small">
+                    <div class="row g-2">
+                        <div class="col-md-6"><strong>Acceso principal:</strong> {{ $history->tipo ?? 'N/A' }} / {{ $history->localizacion ?? 'N/A' }} / {{ $history->lado ?? 'N/A' }}</div>
+                        <div class="col-md-6"><strong>Estado:</strong> {{ $history->estado ?? 'N/A' }}</div>
+                        <div class="col-md-6"><strong>Acceso secundario:</strong> {{ $history->tipo2 ?? 'N/A' }} / {{ $history->localizacion2 ?? 'N/A' }} / {{ $history->lado2 ?? 'N/A' }}</div>
+                        <div class="col-md-6"><strong>Biopsia renal:</strong> {{ $history->biopsia_renal ? 'SÍ' : 'NO' }} {{ $history->biopsia_renal_anio ? '('.$history->biopsia_renal_anio.')' : '' }}</div>
+                        <div class="col-md-12"><strong>Resultado biopsia:</strong> {{ $history->biopsia_renal_resultado ?? 'Sin registro' }}</div>
+                        <div class="col-md-6"><strong>Diálisis peritoneal previa:</strong> {{ $history->d_peritoneal ? 'SÍ' : 'NO' }}</div>
+                        <div class="col-md-6"><strong>Trasplante renal previo:</strong> {{ $history->t_renal ? 'SÍ' : 'NO' }}</div>
                     </div>
                 </div>
             </div>
@@ -115,7 +126,19 @@
                         </div>
                         <div class="col-md-6">
                             <span class="small fw-bold text-secondary d-block mb-1">Médico que Apertura:</span>
-                            <div class="p-2 border rounded bg-light text-dark small"><i class="fa-solid fa-user-md me-2 text-muted"></i>{{ $history->user->name }}</div>
+                            <div class="p-2 border rounded bg-light text-dark small"><i class="fa-solid fa-user-md me-2 text-muted"></i>{{ $history->user?->name ?? 'Usuario no disponible' }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="small fw-bold text-secondary d-block mb-1">Consideraciones de alta:</span>
+                            <div class="p-2 border rounded bg-light text-dark small" style="white-space: pre-line;">{{ $history->consideraciones_alta ?? 'Ninguna' }}</div>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="small fw-bold text-secondary d-block mb-1">Fecha alta:</span>
+                            <div class="p-2 border rounded bg-light text-dark small">{{ $history->f_alta ? $history->f_alta->format('d/m/Y') : 'Sin alta' }}</div>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="small fw-bold text-secondary d-block mb-1">Peso seco:</span>
+                            <div class="p-2 border rounded bg-light text-dark small">{{ $history->peso_seco ?? 'N/A' }}</div>
                         </div>
                     </div>
                 </div>

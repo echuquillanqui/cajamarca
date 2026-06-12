@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4" x-data="{ search: '' }">
+<div class="container-fluid px-4">
     
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -17,14 +17,20 @@
         </div>
     </div>
 
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-4">
+    <form method="GET" action="{{ route('histories.index') }}" class="row mb-3 align-items-center g-2">
+        <div class="col-md-5">
             <div class="input-group shadow-sm rounded-3">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" x-model="search" class="form-control border-start-0 ps-0" placeholder="Buscar por paciente o médico...">
+                <input type="text" name="search" value="{{ $search }}" class="form-control border-start-0 ps-0" placeholder="Buscar por paciente, DNI, médico, orden o acceso...">
+                @if($search !== '')
+                    <a href="{{ route('histories.index') }}" class="btn btn-light border">Limpiar</a>
+                @endif
             </div>
         </div>
-    </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn btn-primary rounded-3 shadow-sm"><i class="fa-solid fa-filter me-2"></i>Filtrar</button>
+        </div>
+    </form>
 
     <div class="card shadow-sm border-0">
         <div class="table-responsive">
@@ -40,10 +46,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($histories as $history)
-                    <tr x-show="search === '' || '{{ strtolower($history->patient->nombre) }}'.includes(search.toLowerCase()) || '{{ strtolower($history->user->name) }}'.includes(search.toLowerCase())">
+                    @forelse($histories as $history)
+                    <tr>
                         <td class="ps-4">
-                            <div class="fw-bold text-dark">{{ $history->patient->nombre }}</div>
+                            <div class="fw-bold text-dark">{{ $history->patient?->nombre ?? 'Paciente no disponible' }}</div>
                             <span class="text-muted small">ID Paciente: #{{ $history->patient_id }}</span>
                         </td>
                         <td>
@@ -62,7 +68,7 @@
                             </span>
                         </td>
                         <td>
-                            <div class="small fw-semibold text-secondary"><i class="fa-solid fa-user-md me-1 opacity-50"></i>{{ $history->user->name }}</div>
+                            <div class="small fw-semibold text-secondary"><i class="fa-solid fa-user-md me-1 opacity-50"></i>{{ $history->user?->name ?? 'Usuario no disponible' }}</div>
                         </td>
                         <td class="text-end pe-4">
                             <div class="btn-group btn-group-sm">
@@ -73,13 +79,20 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                                 <button type="button" class="btn btn-light border text-danger" title="Eliminar Registro"
-                                        @click="confirmDelete('{{ route('histories.destroy', $history->id) }}', '{{ $history->patient->nombre }}')">
+                                        onclick="confirmDelete(@js(route('histories.destroy', $history->id)), @js($history->patient?->nombre ?? 'Paciente no disponible'))">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="fa-regular fa-folder-open fa-2x d-block mb-2"></i>
+                            No se encontraron historias clínicas{{ $search !== '' ? ' para la búsqueda indicada.' : '.' }}
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

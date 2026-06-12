@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class HistoryController extends Controller
 {
@@ -15,17 +16,41 @@ class HistoryController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        // Paginación del lado del servidor combinada con la interactividad de la tabla
-        $histories = History::with(['patient', 'user'])->latest()->paginate(10);
-        return view('histories.index', compact('histories'));
+        $search = trim((string) $request->query('search', ''));
+
+        $histories = History::with(['patient', 'user', 'order'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('serv_origen', 'like', "%{$search}%")
+                        ->orWhere('tipo', 'like', "%{$search}%")
+                        ->orWhereHas('patient', function ($query) use ($search) {
+                            $query->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('dni', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('user', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('order', function ($query) use ($search) {
+                            $query->where('codigo', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('histories.index', compact('histories', 'search'));
     }
 
     public function create()
     {
         $patients = Patient::orderBy('nombre')->get();
-        $orders = Order::where('estado', 'PENDIENTE')->orderByDesc('fecha')->get();
+        $orders = Order::where('estado', 'PENDIENTE')
+            ->whereDoesntHave('history')
+            ->orderByDesc('fecha')
+            ->get();
 
         return view('histories.create', compact('patients', 'orders'));
     }
@@ -45,15 +70,18 @@ class HistoryController extends Controller
 
     public function show(History $history)
     {
-        $history->load(['patient', 'user']);
+        $history->load(['patient', 'user', 'order']);
         return view('histories.show', compact('history'));
     }
 
     public function edit(History $history)
     {
         $patients = Patient::orderBy('nombre')->get();
-        $orders = Order::where('estado', 'PENDIENTE')
-            ->orWhere('id', $history->order_id)
+        $orders = Order::where(function ($query) use ($history) {
+                $query->where('estado', 'PENDIENTE')
+                    ->whereDoesntHave('history')
+                    ->orWhere('id', $history->order_id);
+            })
             ->orderByDesc('fecha')
             ->get();
 
@@ -64,7 +92,7 @@ class HistoryController extends Controller
     {
         $this->prepareJsonFields($request);
 
-        $validated = $request->validate($this->validationRules());
+        $validated = $request->validate($this->validationRules($history));
         $validated = $this->normalizeCheckboxes($request, $validated);
 
         $history->update($validated);
@@ -78,10 +106,14 @@ class HistoryController extends Controller
         return redirect()->route('histories.index')->with('success', 'El expediente clínico ha sido eliminado del sistema.');
     }
 
-    private function validationRules(): array
+    private function validationRules(?History $history = null): array
     {
         return [
-            'order_id' => 'required|exists:orders,id',
+            'order_id' => [
+                'required',
+                'exists:orders,id',
+                Rule::unique('histories', 'order_id')->ignore($history?->id),
+            ],
             'patient_id' => 'required|exists:patients,id',
             'fecha_ingreso_hd' => 'required|date',
             'serv_origen' => 'nullable|string|max:25',
