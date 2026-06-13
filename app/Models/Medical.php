@@ -13,9 +13,10 @@ class Medical extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'fecha_sesion' => 'date',
-        'alergias' => 'boolean',
+        'fecha_sesion'  => 'date',
+        'alergias'      => 'boolean',
         'transfuciones' => 'boolean',
+        'peso_seco'     => 'decimal:2',
     ];
 
     public function order(): BelongsTo

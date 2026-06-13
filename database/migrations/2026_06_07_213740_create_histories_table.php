@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
 
+            // Relaciones Maestras
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->foreignId('user_id')->comment('Médico que apertura')->constrained('users');
@@ -33,8 +34,7 @@ return new class extends Migration
             $table->string('sueno', 30)->nullable();
             $table->string('diuresis_ingreso', 50)->nullable();
 
-            // Antecedentes Personales (Normalizado en JSON para flexibilidad de checks)
-            // Almacena: {"diabetes": true, "hta": true, "medicacion_previa": "Enalapril 20mg"}
+            // Antecedentes Personales (Matriz bidimensional JSON para la grilla de 3 columnas)
             $table->json('antecedentes_personales')->nullable();
             $table->text('antecedentes_familiares')->nullable();
             $table->text('alergias')->nullable();
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->string('biopsia_renal_anio', 4)->nullable();
             $table->string('biopsia_renal_resultado')->nullable();
 
-            // Examen Físico Funcional
+            // Examen Físico Funcional / Signos Vitales
             $table->string('pa', 15)->nullable();
             $table->integer('fc')->nullable();
             $table->integer('fr')->nullable();
@@ -59,31 +59,32 @@ return new class extends Migration
             $table->text('tcsc')->nullable();
             $table->text('respiratorio')->nullable();
             $table->text('cardiovascular')->nullable();
-
-            //ACCESO VASCULAR
-            $table->enum('tipo', ['CVC TUNELIZADO', 'CVC TEMPORAL', 'FAV', 'INJERTO'])->nullable();
-            $table->enum('tipo2', ['CVC TUNELIZADO', 'CVC TEMPORAL', 'FAV', 'INJERTO'])->nullable();
-            $table->enum('localizacion', ['RADIAL', 'HUMERAL', 'CERVICAL', 'FEMORAL', 'OTROS'])->nullable();
-            $table->enum('localizacion2', ['RADIAL', 'HUMERAL', 'CERVICAL', 'FEMORAL', 'OTROS'])->nullable();
-            $table->enum('lado', ['DERECHA', 'IZQUIERDA'])->nullable();
-            $table->enum('lado2', ['DERECHA', 'IZQUIERDA'])->nullable();
-            $table->enum('estado', ['BUENO', 'MALO', 'REGULAR'])->nullable();
-
-            //OTRAS TERAPIAS PREVIAS
-            $table->boolean('d_peritoneal')->default(false)->nullable();
-            $table->boolean('t_renal')->default(false)->nullable();
-
-            //OTROS ACCESOS VASCULARES
-            $table->string('o_tipos', 50)->nullable();
-            $table->date('o_fecha')->nullable();
-            $table->string('o_causa', 100)->nullable();
-
             $table->string('abdomen', 100)->nullable();
             $table->string('g_urinario', 100)->nullable();
             $table->string('neurologico', 100)->nullable();
             $table->string('e_nutricional', 100)->nullable();
 
-            //SEROLOGIA
+            // Acceso Vascular Principal
+            $table->enum('tipo', ['CVC TUNELIZADO', 'CVC TEMPORAL', 'FAV', 'INJERTO'])->nullable();
+            $table->enum('localizacion', ['RADIAL', 'HUMERAL', 'CERVICAL', 'FEMORAL', 'OTROS'])->nullable();
+            $table->enum('lado', ['DERECHA', 'IZQUIERDA'])->nullable();
+            $table->enum('estado', ['BUENO', 'MALO', 'REGULAR'])->nullable();
+
+            // Acceso Vascular Secundario
+            $table->enum('tipo2', ['CVC TUNELIZADO', 'CVC TEMPORAL', 'FAV', 'INJERTO'])->nullable();
+            $table->enum('localizacion2', ['RADIAL', 'HUMERAL', 'CERVICAL', 'FEMORAL', 'OTROS'])->nullable();
+            $table->enum('lado2', ['DERECHA', 'IZQUIERDA'])->nullable();
+
+            // Otras Terapias Previas
+            $table->boolean('d_peritoneal')->default(false)->nullable();
+            $table->boolean('t_renal')->default(false)->nullable();
+
+            // Causa de Pérdida / Historial de Accesos Viejos
+            $table->string('o_tipos', 50)->nullable();
+            $table->date('o_fecha')->nullable();
+            $table->string('o_causa', 100)->nullable();
+
+            // Serología Viral
             $table->boolean('hiv')->default(false)->nullable();
             $table->boolean('hbsag')->default(false)->nullable();
             $table->boolean('anti_hbc')->default(false)->nullable();
@@ -92,12 +93,12 @@ return new class extends Migration
             $table->boolean('rpr')->default(false)->nullable();
             $table->string('ningun_se')->default('NINGUNO')->nullable();
 
-            //VACUNAS
+            // Esquema de Vacunación Hepatitis B
             $table->integer('vacuna_ingreso')->default(0)->nullable();
             $table->integer('vacuna_alta')->default(0)->nullable();
             $table->string('otras_vacunas', 200)->nullable();
 
-            //DIAGNOSTICO
+            // Diagnósticos e Injurias Renales
             $table->enum('enf_cronica', ['G', 'A'])->nullable();
             $table->string('descrip1', 50)->nullable();
             $table->string('etiologia_cronica', 200)->nullable();
@@ -105,23 +106,19 @@ return new class extends Migration
             $table->enum('enf_aguda', ['1', '2', '3'])->nullable();
             $table->string('descrip2', 50)->nullable();
             $table->string('etiologia_aguda', 200)->nullable();
-
+            
             $table->text('motivo_hospt_act')->nullable();
+            $table->json('diagnostico')->nullable(); // Campo flexible para agregados adicionales
 
-            //DIAGNOSTICOS
-            $table->json('diagnostico')->nullable();
-
-            //FIN
+            // Egreso, Destino y Cierre Clínico
             $table->date('f_alta')->nullable();
             $table->string('consideraciones_alta')->nullable();
             $table->text('motivo_fallece')->nullable();
-
-            //PENDIENTES
-            $table->text('pendientes')->nullable();
-
-            //CONDICIONES
             $table->decimal('peso_seco', 10, 2)->nullable();
             $table->string('diuresis_alta', 50)->nullable();
+
+            // Pendientes al Cierre
+            $table->text('pendientes')->nullable();
 
             $table->timestamps();
         });

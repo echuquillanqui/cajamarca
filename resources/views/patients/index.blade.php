@@ -155,7 +155,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-secondary">N° Documento (DNI/CE) *</label>
-                                <input type="text" name="dni" x-model="form.dni" class="form-control rounded-3" maxlength="15" placeholder="8 dígitos numéricos" required>
+                                <input type="text" name="dni" x-model="form.dni" class="form-control rounded-3" maxlength="15" placeholder="Documento de identidad" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-secondary">Fecha Nacimiento *</label>
@@ -217,7 +217,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">DNI Contacto</label>
-                                <input type="text" name="contacto_emergencia_dni" x-model="form.contacto_emergencia_dni" class="form-control rounded-3" maxlength="15">
+                                <input type="text" name="contacto_emergencia_dni" x-model="form.contacto_emergencia_dni" class="form-control rounded-3" maxlength="15" placeholder="N° Documento">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Teléfono Urgencias</label>
@@ -253,7 +253,6 @@
             search: '',
             page: 1,
             perPage: 10,
-            // Usamos una colección vacía como respaldo si por algún motivo la variable llega nula
             patientsList: @json($patients ?? []),
 
             isEdit: false,

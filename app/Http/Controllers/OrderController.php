@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Patient;
+use App\Models\History;
+use App\Models\Medical;
+use App\Models\Nurse;
+use App\Models\Treatment;
+use App\Models\Laboratory; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -22,7 +28,7 @@ class OrderController extends Controller
 
     public function create()
     {
-        $patients = Patient::orderBy('nombre', 'asc')->get(); // Cambiar 'name' si tu columna es diferente
+        $patients = Patient::orderBy('nombre', 'asc')->get(); 
         return view('orders.create', compact('patients'));
     }
 
@@ -39,17 +45,90 @@ class OrderController extends Controller
 
         $codigo = $request->codigo ?? 'ORD-' . strtoupper(uniqid());
 
-        Order::create([
-            'patient_id' => $request->patient_id,
-            'user_id' => Auth::id(), 
-            'fecha' => $request->fecha,
-            'codigo' => $codigo,
-            'tipo' => $request->tipo,
-            'estado' => $request->estado,
-            'observaciones' => $request->observaciones,
-        ]);
+        DB::beginTransaction();
 
-        return redirect()->route('orders.index')->with('success', 'Orden guardada correctamente.');
+        try {
+            $order = Order::create([
+                'patient_id' => $request->patient_id,
+                'user_id' => Auth::id(), 
+                'fecha' => $request->fecha,
+                'codigo' => $codigo,
+                'tipo' => $request->tipo,
+                'estado' => $request->estado,
+                'observaciones' => $request->observaciones,
+            ]);
+
+            if ($request->tipo === 'HISTORIA') {
+                History::create([
+                    'order_id'         => $order->id,
+                    'patient_id'       => $order->patient_id,
+                    'user_id'          => Auth::id(),
+                    'fecha_ingreso_hd' => $order->fecha,
+                ]);
+
+            } elseif ($request->tipo === 'HEMODIALISIS') {
+                
+                Medical::create([
+                    'order_id'      => $order->id,
+                    'patient_id'    => $order->patient_id,
+                    'user_id'       => Auth::id(),
+                    'numero_sesion' => 'PENDIENTE',
+                    'fecha_sesion'  => $order->fecha,
+                    'qb'            => 0, 
+                    'qd'            => 0, 
+                    'tiempo_horas'  => 0,
+                    'cama'          => null,
+                    'evaluacion'    => null,
+                ]);
+
+                $horaActual = now()->format('H:i:s');
+                Nurse::create([
+                    'order_id'        => $order->id,
+                    'patient_id'      => $order->patient_id,
+                    'user_id'         => Auth::id(),
+                    'hora1'           => $horaActual,
+                    's_subjetivo'     => 'Pendiente de registro',
+                    'hora2'           => $horaActual,
+                    'o_objetivo'      => 'Pendiente de registro',
+                    'hora3'           => $horaActual,
+                    'a_analisis'      => 'Pendiente de registro',
+                    'hora4'           => $horaActual,
+                    'p_planificacion' => 'Pendiente de registro',
+                    'hora5'           => $horaActual,
+                    'i_intervencion'  => 'Pendiente de registro',
+                    'hora6'           => $horaActual,
+                    'e_evaluacion'    => 'Pendiente de registro',
+                ]);
+
+                Treatment::create([
+                    'order_id'   => $order->id,
+                    'patient_id' => $order->patient_id,
+                    'user_id'    => Auth::id(),
+                    'hora'       => $horaActual,
+                    'ptm'        => 0,
+                    'pa'         => null,
+                    'fc'         => null,
+                    'sao2'       => null,
+                ]);
+            } elseif ($request->tipo === 'LABORATORIO') {
+                Laboratory::create([
+                    'order_id'   => $order->id,
+                    'patient_id' => $order->patient_id,
+                    'user_id'    => Auth::id(),
+                    'fecha'      => $order->fecha,
+                    'tipo'       => 'General / Control',
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('orders.index')->with('success', 'Orden guardada y submódulos clínicos inicializados.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al procesar la orden: ' . $e->getMessage());
+        }
     }
 
     public function show(Order $order)
@@ -59,7 +138,7 @@ class OrderController extends Controller
 
     public function edit(Order $order)
     {
-        $patients = Patient::orderBy('name', 'asc')->get();
+        $patients = Patient::orderBy('nombre', 'asc')->get();
         return view('orders.edit', compact('order', 'patients'));
     }
 

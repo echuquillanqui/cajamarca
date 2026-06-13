@@ -10,23 +10,29 @@ class History extends Model
 {
     use HasFactory;
 
+    /**
+     * Los atributos que no están protegidos contra asignación masiva.
+     */
     protected $guarded = [];
 
+    /**
+     * Casts de conversión automática de atributos.
+     */
     protected $casts = [
-        'fecha_ingreso_hd' => 'date',
-        'antecedentes_personales' => 'array',
-        'biopsia_renal' => 'boolean',
-        'd_peritoneal' => 'boolean',
-        't_renal' => 'boolean',
-        'o_fecha' => 'date',
-        'hiv' => 'boolean',
-        'hbsag' => 'boolean',
-        'anti_hbc' => 'boolean',
-        'vhc' => 'boolean',
-        'anti_hbs' => 'boolean',
-        'rpr' => 'boolean',
-        'diagnostico' => 'array',
-        'f_alta' => 'date',
+        'fecha_ingreso_hd'        => 'date',
+        'antecedentes_personales' => 'array', // Crucial para serializar automáticamente la grilla asociativa a JSON
+        'biopsia_renal'           => 'boolean',
+        'd_peritoneal'            => 'boolean',
+        't_renal'                 => 'boolean',
+        'o_fecha'                 => 'date',
+        'hiv'                     => 'boolean',
+        'hbsag'                   => 'boolean',
+        'anti_hbc'                => 'boolean',
+        'vhc'                     => 'boolean',
+        'anti_hbs'                => 'boolean',
+        'rpr'                     => 'boolean',
+        'diagnostico'             => 'array',
+        'f_alta'                  => 'date',
     ];
 
     public function order(): BelongsTo

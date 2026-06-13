@@ -69,7 +69,7 @@
                     <span>Esta orden genera un flujo en el módulo de <strong>{{ $order->tipo }}</strong>.</span>
                 </div>
                 <button class="btn btn-sm btn-primary rounded-pill shadow-sm" disabled>
-                    Proceder a {{ title_case(strtolower($order->tipo)) }} <i class="fa-solid fa-arrow-right ms-1"></i>
+                    Proceder a {{ strtolower($order->tipo) }} <i class="fa-solid fa-arrow-right ms-1"></i>
                 </button>
             </div>
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container px-4">
     
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -11,9 +11,7 @@
                 </h4>
                 <p class="text-muted small mb-0">Expedientes de ingreso a Hemodiálisis, monitoreo serológico y accesos vasculares.</p>
             </div>
-            <a href="{{ route('histories.create') }}" class="btn btn-primary px-4 rounded-3 fw-bold shadow-sm">
-                <i class="fa-solid fa-plus me-2"></i>Aperturar Historia Clínica
-            </a>
+
         </div>
     </div>
 

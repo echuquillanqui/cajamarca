@@ -7,59 +7,51 @@ use Illuminate\Http\Request;
 
 class NurseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct() {
+        $this->middleware('auth');
+    }
     public function index()
     {
-        //
+        $nurses = Nurse::with('order.patient')->latest()->paginate(10);
+        return view('nurses.index', compact('nurses'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Nurse $nurse)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Nurse $nurse)
     {
-        //
+        return view('nurses.edit', compact('nurse'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Nurse $nurse)
     {
-        //
+        $validatedData = $request->validate([
+            'hora1'       => 'required',
+            's_subjetivo' => 'required|string',
+            'hora2'       => 'required',
+            'o_objetivo'  => 'required|string',
+            'hora3'       => 'required',
+            'a_analisis'  => 'required|string',
+            'hora4'       => 'required',
+            'p_planificacion' => 'required|string',
+            'hora5'       => 'required',
+            'i_intervencion'  => 'required|string',
+            'hora6'       => 'required',
+            'e_evaluacion'    => 'required|string',
+            'uf_efectivo' => 'nullable|string|max:100',
+            'asp_filtro'  => 'nullable|string|max:255',
+        ]);
+
+        $nurse->update($validatedData);
+
+        return redirect()->route('orders.show', $nurse->order_id)
+            ->with('success', 'Registro de enfermería SOAPIE actualizado.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Nurse $nurse)
     {
-        //
+        $orderId = $nurse->order_id;
+        $nurse->delete();
+
+        return redirect()->route('orders.show', $orderId)
+            ->with('success', 'La hoja SOAPIE ha sido eliminada con éxito.');
     }
 }

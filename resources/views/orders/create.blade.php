@@ -23,7 +23,7 @@
                             <option value="">Escriba para buscar paciente...</option>
                             @foreach($patients as $patient)
                                 <option value="{{ $patient->id }}" {{ old('patient_id') == $patient->id ? 'selected' : '' }}>
-                                    {{ $patient->name }}
+                                    {{ $patient->nombre }}
                                 </option>
                             @endforeach
                         </select>

@@ -36,15 +36,25 @@
                         </ul>
                     </li>
 
+                    <!-- MENÚ DESPLEGABLE DE HEMODIÁLISIS ACTUALIZADO -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="sesionesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-solid fa-kit-medical me-1"></i> Hemodiálisis
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="sesionesDropdown">
-                            <li><a class="dropdown-item" href="{{ route('orders.index') }}"><i class="fa-solid fa-list me-2 text-muted"></i> Ordenes</a></li>
-                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-file me-2 text-muted"></i> Historia Inicial</a></li>
-                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-pill me-2 text-muted"></i> Hemodialisis</a></li>
-                            <li><a class="dropdown-item" href=""><i class="fa-solid fa-calendar-check me-2 text-muted"></i> Laboratorio</a></li>
+                            <span class="dropdown-header text-muted small fw-bold">Núcleo Operativo</span>
+                            <li><a class="dropdown-item" href="{{ route('orders.index') }}"><i class="fa-solid fa-clipboard-list me-2 text-muted"></i> Órdenes Maestras</a></li>
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            <span class="dropdown-header text-muted small fw-bold">Secciones Clínicas</span>
+                            <li><a class="dropdown-item" href="{{ route('histories.index') }}"><i class="fa-solid fa-book-medical me-2 text-muted"></i> Historias Iniciales</a></li>
+                            <li><a class="dropdown-item" href="{{ route('medicals.index') }}"><i class="fa-solid fa-user-doctor me-2 text-muted"></i> Prescripciones Médicas</a></li>
+                            <li><a class="dropdown-item" href="{{ route('nurses.index') }}"><i class="fa-solid fa-user-nurse me-2 text-muted"></i> Notas de Enfermería (SOAPIE)</a></li>
+                            <li><a class="dropdown-item" href="{{ route('treatments.index') }}"><i class="fa-solid fa-gauge-high me-2 text-muted"></i> Monitoreo Horario (Transdiálisis)</a></li>
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            <span class="dropdown-header text-muted small fw-bold">Otros Destinos</span>
+                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-flask me-2 text-muted"></i> Laboratorio</a></li>
                         </ul>
                     </li>
 
