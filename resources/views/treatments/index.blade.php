@@ -84,6 +84,11 @@
                 </table>
             </div>
         </div>
+        @if(isset($treatments) && $treatments->hasPages())
+            <div class="card-footer bg-white py-3">
+                {{ $treatments->links('pagination::bootstrap-5') }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

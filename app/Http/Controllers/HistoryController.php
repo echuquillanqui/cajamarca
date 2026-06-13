@@ -161,7 +161,7 @@ class HistoryController extends Controller
         // 5. Guardamos en la Base de Datos
         $history->update($validatedData);
 
-        return redirect()->route('histories.edit', $history->order_id)
+        return redirect()->route('histories.edit', $history->id)
             ->with('success', 'Ficha clínica de hemodiálisis y antecedentes tricolumna actualizados correctamente.');
     }
 }

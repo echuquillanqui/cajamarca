@@ -84,6 +84,21 @@
                     </div>
                 </div>
 
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Eritropoyetina (EPO)</label>
+                        <input type="text" class="form-control" name="epo" value="{{ old('epo', $nurse->epo) }}" placeholder="Dosis...">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Hierro</label>
+                        <input type="text" class="form-control" name="hierro" value="{{ old('hierro', $nurse->hierro) }}" placeholder="Dosis...">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Vitamina B12</label>
+                        <input type="text" class="form-control" name="vitb12" value="{{ old('vitb12', $nurse->vitb12) }}" placeholder="Dosis...">
+                    </div>
+                </div>
+
                 <div class="mt-4 d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary rounded-pill px-4" style="background-color: var(--hc-primary); border: none;">
                         <i class="fa-solid fa-arrows-rotate me-2"></i>Actualizar Registro SOAPIE

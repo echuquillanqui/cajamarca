@@ -38,6 +38,9 @@ class NurseController extends Controller
             'e_evaluacion'    => 'required|string',
             'uf_efectivo' => 'nullable|string|max:100',
             'asp_filtro'  => 'nullable|string|max:255',
+            'epo'         => 'nullable|string|max:255',
+            'hierro'      => 'nullable|string|max:255',
+            'vitb12'      => 'nullable|string|max:255',
         ]);
 
         $nurse->update($validatedData);

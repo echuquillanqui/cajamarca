@@ -76,6 +76,11 @@
                 </table>
             </div>
         </div>
+        @if($nurses->hasPages())
+            <div class="card-footer bg-white py-3">
+                {{ $nurses->links('pagination::bootstrap-5') }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

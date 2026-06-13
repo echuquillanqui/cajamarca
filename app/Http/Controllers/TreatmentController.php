@@ -39,7 +39,7 @@ class TreatmentController extends Controller
                 'laboratorio_control' => $t->laboratorio_control,
                 'observaciones' => $t->observaciones,
             ];
-        ]);
+        });
 
         return view('treatments.edit', compact('order_id', 'treatments_json'));
     }

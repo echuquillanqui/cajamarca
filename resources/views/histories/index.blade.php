@@ -95,7 +95,7 @@
             </table>
         </div>
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $histories->links() }}
+            {{ $histories->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>
