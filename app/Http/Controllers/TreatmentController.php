@@ -15,7 +15,15 @@ class TreatmentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
-        $query = Treatment::with(['order', 'patient', 'user'])->latest();
+        $query = Order::with([
+            'patient',
+            'treatments' => function ($treatments) {
+                $treatments->with('user')->orderBy('hora', 'asc');
+            },
+        ])
+            ->whereHas('treatments')
+            ->withCount('treatments')
+            ->latest('updated_at');
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($search) {
@@ -23,16 +31,17 @@ class TreatmentController extends Controller
                     $p->where('nombre', 'LIKE', '%' . $search . '%')
                         ->orWhere('dni', 'LIKE', '%' . $search . '%');
                 })
-                ->orWhereHas('order', function ($o) use ($search) {
-                    $o->where('codigo', 'LIKE', '%' . $search . '%');
-                })
-                ->orWhere('pa', 'LIKE', '%' . $search . '%')
-                ->orWhere('observaciones', 'LIKE', '%' . $search . '%');
+                ->orWhere('codigo', 'LIKE', '%' . $search . '%')
+                ->orWhereHas('treatments', function ($t) use ($search) {
+                    $t->where('pa', 'LIKE', '%' . $search . '%')
+                        ->orWhere('observaciones', 'LIKE', '%' . $search . '%');
+                });
             });
         }
 
-        $treatments = $query->paginate(10)->withQueryString();
-        return view('treatments.index', compact('treatments', 'search'));
+        $treatmentOrders = $query->paginate(10)->withQueryString();
+
+        return view('treatments.index', compact('treatmentOrders', 'search'));
     }
 
     public function edit($order_id)
