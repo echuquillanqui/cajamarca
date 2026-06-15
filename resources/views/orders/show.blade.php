@@ -10,6 +10,11 @@
             <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1">
                 <i class="fa-solid fa-pen me-1"></i> Editar General
             </a>
+            @if($order->tipo === 'HEMODIALISIS')
+                <a href="{{ route('orders.hemodialysis.pdf', $order->id) }}" target="_blank" class="btn btn-danger btn-sm rounded-pill px-3 me-1">
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF Hemodiálisis
+                </a>
+            @endif
             <button onclick="window.print();" class="btn btn-light btn-sm rounded-pill px-3 border">
                 <i class="fa-solid fa-print me-1"></i> Imprimir Cabecera
             </button>
@@ -25,7 +30,7 @@
             <div class="row row-gap-3">
                 <div class="col-md-6">
                     <small class="text-muted d-block text-uppercase fw-semibold">Paciente</small>
-                    <h5 class="text-dark fw-bold mb-0">{{ $order->patient->name }}</h5>
+                    <h5 class="text-dark fw-bold mb-0">{{ $order->patient->nombre }}</h5>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <small class="text-muted d-block text-uppercase fw-semibold mb-1">Tipo de Servicio</small>
@@ -68,9 +73,15 @@
                     <i class="fa-solid fa-circle-info me-2 fs-5"></i>
                     <span>Esta orden genera un flujo en el módulo de <strong>{{ $order->tipo }}</strong>.</span>
                 </div>
-                <button class="btn btn-sm btn-primary rounded-pill shadow-sm" disabled>
-                    Proceder a {{ strtolower($order->tipo) }} <i class="fa-solid fa-arrow-right ms-1"></i>
-                </button>
+                @if($order->tipo === 'HEMODIALISIS')
+                    <a href="{{ route('orders.hemodialysis.pdf', $order->id) }}" target="_blank" class="btn btn-sm btn-primary rounded-pill shadow-sm">
+                        Descargar ficha PDF <i class="fa-solid fa-file-pdf ms-1"></i>
+                    </a>
+                @else
+                    <button class="btn btn-sm btn-primary rounded-pill shadow-sm" disabled>
+                        Proceder a {{ strtolower($order->tipo) }} <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </button>
+                @endif
             </div>
 
         </div>
