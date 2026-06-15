@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Nurse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class NurseController extends Controller
 {
@@ -13,7 +14,18 @@ class NurseController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
+        $fechaFiltro = $request->input('fecha_filtro', Carbon::today()->format('Y-m-d'));
         $query = Nurse::with(['order', 'patient', 'user'])->latest();
+
+        if ($request->filled('fecha_filtro')) {
+            $query->whereHas('order', function ($o) use ($fechaFiltro) {
+                $o->whereDate('fecha', $fechaFiltro);
+            });
+        } else {
+            $query->whereHas('order', function ($o) {
+                $o->whereDate('fecha', Carbon::today());
+            });
+        }
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($search) {
@@ -32,7 +44,7 @@ class NurseController extends Controller
         }
 
         $nurses = $query->paginate(10)->withQueryString();
-        return view('nurses.index', compact('nurses', 'search'));
+        return view('nurses.index', compact('nurses', 'search', 'fechaFiltro'));
     }
 
     public function edit(Nurse $nurse)
