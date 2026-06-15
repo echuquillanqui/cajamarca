@@ -3,15 +3,37 @@
 @section('content')
 <div class="container px-4">
     
-    <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h4 class="fw-bold text-dark mb-1">
-                    <i class="fa-solid fa-file-medical text-primary me-2"></i>Historias Clínicas de Nefrología
-                </h4>
-                <p class="text-muted small mb-0">Expedientes de ingreso a Hemodiálisis, monitoreo serológico y accesos vasculares.</p>
-            </div>
-
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-body p-4">
+            <form method="GET" action="{{ route('histories.index') }}" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-secondary">Fecha de Ingreso HD</label>
+                    <input type="date" name="fecha_filtro" class="form-control" 
+                           value="{{ $request->get('fecha_filtro', !request()->has('clear_filters') ? \Carbon\Carbon::today()->format('Y-m-d') : '') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-secondary">Paciente (Nombres/Apellidos)</label>
+                    <input type="text" name="paciente_nombre" class="form-control" placeholder="Ej. Juan Pérez" value="{{ $request->get('paciente_nombre') }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-secondary">Documento (DNI)</label>
+                    <input type="text" name="paciente_dni" class="form-control" placeholder="Número de DNI" value="{{ $request->get('paciente_dni') }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-secondary">Acceso Vascular</label>
+                    <select name="tipo_acceso" class="form-select">
+                        <option value="">TODOS</option>
+                        <option value="CVC TUNELIZADO" {{ $request->tipo_acceso == 'CVC TUNELIZADO' ? 'selected' : '' }}>CVC TUNELIZADO</option>
+                        <option value="CVC TEMPORAL" {{ $request->tipo_acceso == 'CVC TEMPORAL' ? 'selected' : '' }}>CVC TEMPORAL</option>
+                        <option value="FAV" {{ $request->tipo_acceso == 'FAV' ? 'selected' : '' }}>FAV</option>
+                        <option value="INJERTO" {{ $request->tipo_acceso == 'INJERTO' ? 'selected' : '' }}>INJERTO</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-magnifying-glass me-2"></i>Buscar</button>
+                    <a href="{{ route('histories.index', ['clear_filters' => 1]) }}" class="btn btn-outline-secondary" title="Limpiar Filtros"><i class="fa-solid fa-eraser"></i></a>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -19,9 +41,12 @@
         <div class="col-md-5">
             <div class="input-group shadow-sm rounded-3">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" name="search" value="{{ $search }}" class="form-control border-start-0 ps-0" placeholder="Buscar por paciente, DNI, médico, orden o acceso...">
-                @if($search !== '')
-                    <a href="{{ route('histories.index') }}" class="btn btn-light border">Limpiar</a>
+                {{-- Línea 44: Cambiamos $search por $request->get('paciente_nombre') o el filtro de texto que uses --}}
+                <input type="text" name="paciente_nombre" value="{{ $request->get('paciente_nombre') }}" class="form-control border-start-0 ps-0" placeholder="Buscar por paciente...">
+
+                {{-- Línea 45: Verificamos si hay algún filtro activo para mostrar el botón de limpiar --}}
+                @if($request->filled('paciente_nombre') || $request->filled('paciente_dni') || $request->filled('fecha_filtro'))
+                    <a href="{{ route('histories.index', ['clear_filters' => 1]) }}" class="btn btn-light border">Limpiar</a>
                 @endif
             </div>
         </div>
@@ -70,6 +95,11 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="btn-group btn-group-sm">
+
+                                <a href="{{ route('histories.pdf', $history->id) }}" target="_blank" class="btn btn-light border text-danger" title="Exportar PDF Oficial">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </a>
+
                                 <a href="{{ route('histories.show', $history->id) }}" class="btn btn-light border text-primary" title="Ver Historial Completo">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>

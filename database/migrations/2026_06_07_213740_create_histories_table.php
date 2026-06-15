@@ -22,6 +22,7 @@ return new class extends Migration
             
             // Enfermedad Actual
             $table->string('serv_origen', 25)->nullable();
+            $table->string('cama', 25)->nullable();
             $table->string('tiempo_enfermedad', 50)->nullable();
             $table->string('inicio_enfermedad', 50)->nullable(); // Súbito, insidioso
             $table->string('curso_enfermedad', 50)->nullable();  // Progresivo, estacionario
@@ -69,11 +70,6 @@ return new class extends Migration
             $table->enum('localizacion', ['RADIAL', 'HUMERAL', 'CERVICAL', 'FEMORAL', 'OTROS'])->nullable();
             $table->enum('lado', ['DERECHA', 'IZQUIERDA'])->nullable();
             $table->enum('estado', ['BUENO', 'MALO', 'REGULAR'])->nullable();
-
-            // Acceso Vascular Secundario
-            $table->enum('tipo2', ['CVC TUNELIZADO', 'CVC TEMPORAL', 'FAV', 'INJERTO'])->nullable();
-            $table->enum('localizacion2', ['RADIAL', 'HUMERAL', 'CERVICAL', 'FEMORAL', 'OTROS'])->nullable();
-            $table->enum('lado2', ['DERECHA', 'IZQUIERDA'])->nullable();
 
             // Otras Terapias Previas
             $table->boolean('d_peritoneal')->default(false)->nullable();

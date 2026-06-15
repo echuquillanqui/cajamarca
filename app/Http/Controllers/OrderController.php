@@ -10,6 +10,7 @@ use App\Models\Nurse;
 use App\Models\Treatment;
 use App\Models\Laboratory; 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -20,10 +21,41 @@ class OrderController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['patient', 'user'])->orderBy('id', 'desc')->paginate(10);
-        return view('orders.index', compact('orders'));
+        // 1. Iniciamos la consulta base con sus relaciones cargadas
+        $query = Order::with(['patient', 'user']);
+
+        // 2. Filtro de Fecha: Si viene una fecha se usa, si no, se filtra por el día de hoy por defecto
+        if ($request->filled('fecha_filtro')) {
+            $query->whereDate('fecha', $request->fecha_filtro);
+        } else {
+            // Si el usuario no ha enviado un filtro de fecha aún (por ejemplo, al entrar por primera vez)
+            $query->whereDate('fecha', Carbon::today());
+        }
+
+        // 3. Filtro por Nombres y Apellidos del Paciente
+        if ($request->filled('paciente_nombre')) {
+            $nombreBusqueda = $request->paciente_nombre;
+            $query->whereHas('patient', function ($q) use ($nombreBusqueda) {
+                $q->where('nombre', 'like', '%' . $nombreBusqueda . '%')
+                  ->orWhere('apellido', 'like', '%' . $nombreBusqueda . '%'); // Ajusta 'apellido' si cambia en tu BD
+            });
+        }
+
+        // 4. Filtro por DNI del Paciente
+        if ($request->filled('paciente_dni')) {
+            $dniBusqueda = $request->paciente_dni;
+            $query->whereHas('patient', function ($q) use ($dniBusqueda) {
+                $q->where('dni', 'like', '%' . $dniBusqueda . '%'); // Ajusta 'dni' si cambia en tu BD
+            });
+        }
+
+        // 5. Paginación configurada a 15 registros por página conservando el orden descendente
+        $orders = $query->orderBy('id', 'desc')->paginate(15);
+
+        // Retornamos la vista pasando también los filtros aplicados para mantenerlos en los inputs de la vista
+        return view('orders.index', compact('orders', 'request'));
     }
 
     public function create()

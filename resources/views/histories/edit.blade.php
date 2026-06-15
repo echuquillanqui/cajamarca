@@ -69,8 +69,8 @@
                                 <input type="text" class="form-control" name="serv_origen" value="{{ old('serv_origen', $history->serv_origen) }}" maxlength="25">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-bold text-secondary">Tiempo de Enfermedad</label>
-                                <input type="text" class="form-control" name="tiempo_enfermedad" value="{{ old('tiempo_enfermedad', $history->tiempo_enfermedad) }}" placeholder="Ej: 3 años">
+                                <label class="form-label fw-bold text-secondary">Cama</label>
+                                <input type="text" class="form-control" name="cama" value="{{ old('cama', $history->cama) }}" maxlength="25">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold text-secondary">Inicio</label>
@@ -255,38 +255,6 @@
                                         <option value="BUENO" {{ old('estado', $history->estado) == 'BUENO' ? 'selected' : '' }}>BUENO</option>
                                         <option value="REGULAR" {{ old('estado', $history->estado) == 'REGULAR' ? 'selected' : '' }}>REGULAR</option>
                                         <option value="MALO" {{ old('estado', $history->estado) == 'MALO' ? 'selected' : '' }}>MALO</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-3 bg-light rounded-3 border mb-3">
-                            <h6 class="fw-bold text-dark"><i class="fa-solid fa-circle-dot text-secondary me-2"></i>Acceso Vascular Secundario</h6>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label small text-muted mb-1">Tipo de Acceso 2</label>
-                                    <select class="form-select select-sm" name="tipo2">
-                                        <option value="">Ninguno</option>
-                                        @foreach(['CVC TUNELIZADO','CVC TEMPORAL','FAV','INJERTO'] as $t)
-                                            <option value="{{ $t }}" {{ old('tipo2', $history->tipo2) == $t ? 'selected' : '' }}>{{ $t }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small text-muted mb-1">Localización 2</label>
-                                    <select class="form-select select-sm" name="localizacion2">
-                                        <option value="">Ninguna</option>
-                                        @foreach(['RADIAL','HUMERAL','CERVICAL','FEMORAL','OTROS'] as $l)
-                                            <option value="{{ $l }}" {{ old('localizacion2', $history->localizacion2) == $l ? 'selected' : '' }}>{{ $l }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small text-muted mb-1">Lado 2</label>
-                                    <select class="form-select select-sm" name="lado2">
-                                        <option value="">Ninguno</option>
-                                        <option value="DERECHA" {{ old('lado2', $history->lado2) == 'DERECHA' ? 'selected' : '' }}>DERECHA</option>
-                                        <option value="IZQUIERDA" {{ old('lado2', $history->lado2) == 'IZQUIERDA' ? 'selected' : '' }}>IZQUIERDA</option>
                                     </select>
                                 </div>
                             </div>

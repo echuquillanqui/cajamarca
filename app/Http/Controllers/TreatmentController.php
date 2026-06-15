@@ -56,6 +56,9 @@ class TreatmentController extends Controller
         // Buscamos la orden maestra para obtener el paciente correcto de forma segura
         $order = Order::findOrFail($order_id);
 
+        $sentIds = collect($request->treatments)->pluck('id')->filter()->toArray();
+        Treatment::where('order_id', $order_id)->whereNotIn('id', $sentIds)->delete();
+
         foreach ($request->treatments as $treatmentData) {
             Treatment::updateOrCreate(
                 ['id' => $treatmentData['id'] ?? null],

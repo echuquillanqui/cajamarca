@@ -49,7 +49,7 @@
                                 <td class="text-end pe-4" x-data="{}">
                                     <div class="btn-group">
                                         <a href="{{ route('orders.show', $treatment->order_id) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye"></i></a>
-                                        <a href="{{ route('treatments.edit', $treatment->id) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
+                                        <a href="{{ route('treatments.edit', $treatment->order_id) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
                                         <button type="button" class="btn btn-sm btn-outline-danger"
                                                 @click="
                                                     Swal.fire({

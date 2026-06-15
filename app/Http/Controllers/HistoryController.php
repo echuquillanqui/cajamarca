@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\History;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HistoryController extends Controller
 {
@@ -13,27 +15,42 @@ class HistoryController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->input('search', '');
         $query = History::with(['order', 'patient', 'user']);
 
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('patient', function ($p) use ($search) {
-                    $p->where('nombre', 'LIKE', '%' . $search . '%');
-                })
-                ->orWhereHas('order', function ($o) use ($search) {
-                    $o->where('codigo', 'LIKE', '%' . $search . '%');
-                })
-                ->orWhereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'LIKE', '%' . $search . '%');
-                })
-                ->orWhere('tipo', 'LIKE', '%' . $search . '%')
-                ->orWhere('serv_origen', 'LIKE', '%' . $search . '%');
+        // 1. Filtro de Fecha de Ingreso: Por defecto el día de hoy si no se especifica
+        if ($request->filled('fecha_filtro')) {
+            $query->whereDate('fecha_ingreso_hd', $request->fecha_filtro);
+        } else if (!$request->has('clear_filters')) {
+            // Al entrar por primera vez sin intención de limpiar, filtra el día de hoy
+            $query->whereDate('fecha_ingreso_hd', Carbon::today());
+        }
+
+        // 2. Filtro por Nombres / Apellidos del Paciente
+        if ($request->filled('paciente_nombre')) {
+            $nombre = $request->paciente_nombre;
+            $query->whereHas('patient', function ($p) use ($nombre) {
+                $p->where('nombre', 'LIKE', '%' . $nombre . '%')
+                ->orWhere('apellido', 'LIKE', '%' . $nombre . '%');
             });
         }
 
-        $histories = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-        return view('histories.index', compact('histories', 'search'));
+        // 3. Filtro por DNI del Paciente
+        if ($request->filled('paciente_dni')) {
+            $dni = $request->paciente_dni;
+            $query->whereHas('patient', function ($p) use ($dni) {
+                $p->where('dni', 'LIKE', '%' . $dni . '%');
+            });
+        }
+
+        // 4. Filtro por Tipo de Acceso Vascular
+        if ($request->filled('tipo_acceso')) {
+            $query->where('tipo', $request->tipo_acceso);
+        }
+
+        // 5. Paginación de 15 registros conservando los parámetros de búsqueda en la URL
+        $histories = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
+
+        return view('histories.index', compact('histories', 'request'));
     }
 
     public function edit(History $history)
@@ -47,6 +64,7 @@ class HistoryController extends Controller
         $validatedData = $request->validate([
             'fecha_ingreso_hd'     => 'required|date',
             'serv_origen'          => 'nullable|string|max:25',
+            'cama'          => 'nullable|string|max:25',
             'tiempo_enfermedad'    => 'nullable|string|max:50',
             'inicio_enfermedad'    => 'nullable|string|max:50',
             'curso_enfermedad'     => 'nullable|string|max:50',
@@ -90,11 +108,6 @@ class HistoryController extends Controller
             'localizacion'         => 'nullable|in:RADIAL,HUMERAL,CERVICAL,FEMORAL,OTROS',
             'lado'                 => 'nullable|in:DERECHA,IZQUIERDA',
             'estado'               => 'nullable|in:BUENO,MALO,REGULAR',
-
-            // Acceso Vascular 2
-            'tipo2'                => 'nullable|in:CVC TUNELIZADO,CVC TEMPORAL,FAV,INJERTO',
-            'localizacion2'        => 'nullable|in:RADIAL,HUMERAL,CERVICAL,FEMORAL,OTROS',
-            'lado2'                => 'nullable|in:DERECHA,IZQUIERDA',
 
             // Otras Terapias Previas
             'd_peritoneal'         => 'nullable|boolean',
@@ -163,5 +176,20 @@ class HistoryController extends Controller
 
         return redirect()->route('histories.edit', $history->id)
             ->with('success', 'Ficha clínica de hemodiálisis y antecedentes tricolumna actualizados correctamente.');
+    }
+
+    public function generatePdf(History $history)
+    {
+        // Cargamos relaciones críticas para evitar consultas flojas (lazy loading)
+        $history->load(['patient', 'user', 'order']);
+
+        // Preparar el PDF mapeando la vista HTML optimizada para impresión en tamaño A4
+        $pdf = Pdf::loadView('histories.pdf', compact('history'))
+                ->setPaper('a4', 'portrait')
+                ->setWarnings(false);
+
+        // Retorna el stream de descarga con el nombre estandarizado del expediente
+        $filename = 'HC-ING-' . ($history->patient?->dni ?? $history->id) . '.pdf';
+        return $pdf->stream($filename);
     }
 }

@@ -4,7 +4,7 @@
 <div class="container-fluid px-4 py-3" x-data="treatmentManager()">
     
     <div class="mb-3">
-        <a href="{{ route('orders.show', $order_id ?? $treatment->order_id ?? 1) }}" class="text-decoration-none text-secondary small fw-semibold">
+        <a href="{{ route('treatments.index') }}" class="text-decoration-none text-secondary small fw-semibold">
             <i class="fa-solid fa-chevron-left me-1"></i> Cancelar y Volver al Expediente
         </a>
     </div>
@@ -29,7 +29,7 @@
                 <span class="small text-dark-emphasis">Puede agregar hasta 8 controles secuenciales. Use el botón <strong class="text-primary">"Agregar Siguiente Hora"</strong> para abrir una nueva fila.</span>
             </div>
 
-            <form action="{{ route('orders.show', $order_id ?? $treatment->order_id ?? 1) }}" method="POST">
+            <form action="{{ route('treatments.update', $order_id ?? $treatment->order_id ?? 1) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -132,7 +132,7 @@
                         Filas activas: <span x-text="rows.length" class="fw-bold text-dark"></span> de 8 máximas.
                     </span>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('orders.show', $order_id ?? $treatment->order_id ?? 1) }}" class="btn btn-outline-secondary px-4 rounded-pill fw-semibold">
+                        <a href="{{ route('treatments.edit', $treatment->order_id  ?? $treatment->order_id ?? 1) }}" class="btn btn-outline-secondary px-4 rounded-pill fw-semibold">
                             Cancelar
                         </a>
                         <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold shadow-sm" style="background-color: var(--hc-primary); border: none;">

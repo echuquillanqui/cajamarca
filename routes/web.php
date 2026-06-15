@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('patients', PatientController::class)->except(['create', 'edit', 'show']);
     Route::resource('orders', OrderController::class);
     Route::resource('histories', HistoryController::class);
+    Route::get('histories/{history}/pdf', [App\Http\Controllers\HistoryController::class, 'generatePdf'])->name('histories.pdf');
     Route::resource('medicals', MedicalController::class);
     Route::resource('nurses', NurseController::class);
     Route::resource('treatments', TreatmentController::class);

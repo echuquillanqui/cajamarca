@@ -12,7 +12,40 @@
         </a>
     </div>
 
-    <div class="card">
+    <!-- SECCIÓN DE FILTROS AGREGADA -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body bg-light">
+            <form action="{{ route('orders.index') }}" method="GET" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="fecha_filtro" class="form-label small fw-bold text-secondary">Filtrar por Fecha</label>
+                    <input type="date" name="fecha_filtro" id="fecha_filtro" class="form-control" 
+                           value="{{ $request->get('fecha_filtro', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="paciente_nombre" class="form-label small fw-bold text-secondary">Nombres / Apellidos</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" name="paciente_nombre" id="paciente_nombre" class="form-control" 
+                               placeholder="Buscar paciente..." value="{{ $request->get('paciente_nombre') }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="paciente_dni" class="form-label small fw-bold text-secondary">Documento (DNI)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-id-card"></i></span>
+                        <input type="text" name="paciente_dni" id="paciente_dni" class="form-control" 
+                               placeholder="Número de DNI" value="{{ $request->get('paciente_dni') }}">
+                    </div>
+                </div>
+                <div class="col-md-2 d-grid gap-2 d-md-flex text-end">
+                    <button type="submit" class="btn btn-info text-white flex-grow-1"><i class="fa-solid fa-magnifying-glass me-1"></i> Buscar</button>
+                    <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary" title="Limpiar Filtros"><i class="fa-solid fa-eraser"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
         <div class="card-header">
             <span><i class="fa-solid fa-table-list me-2 text-info"></i>Todas las Órdenes</span>
         </div>
@@ -35,7 +68,11 @@
                             <tr>
                                 <td class="ps-4 fw-bold text-dark">{{ $order->codigo }}</td>
                                 <td>
-                                    <div class="fw-semibold text-secondary">{{ $order->patient->name }}</div>
+                                    <!-- Cambiado $order->patient->name por $order->patient->nombre ya que se usa 'nombre' en el create -->
+                                    <div class="fw-semibold text-secondary">{{ $order->patient->nombre }} {{ $order->patient->apellido ?? '' }}</div>
+                                    @if($order->patient->dni)
+                                        <small class="text-muted d-block">DNI: {{ $order->patient->dni }}</small>
+                                    @endif
                                 </td>
                                 <td>
                                     @switch($order->tipo)
@@ -100,7 +137,7 @@
                             <tr>
                                 <td colspan="7" class="text-center py-5 text-muted">
                                     <i class="fa-solid fa-clipboard-list fa-3x mb-3 text-secondary opacity-50"></i>
-                                    <p class="mb-0">No se encontraron órdenes generadas en el sistema.</p>
+                                    <p class="mb-0">No se encontraron órdenes generadas con los filtros seleccionados.</p>
                                 </td>
                             </tr>
                         @endforelse
@@ -110,7 +147,8 @@
         </div>
         @if($orders->hasPages())
             <div class="card-footer bg-white py-3">
-                {{ $orders->links('pagination::bootstrap-5') }}
+                <!-- appends(request()->query()) asegura que al cambiar de página de la 1 a la 2 se mantengan tus filtros activos -->
+                {{ $orders->appends(request()->query())->links('pagination::bootstrap-5') }}
             </div>
         @endif
     </div>
