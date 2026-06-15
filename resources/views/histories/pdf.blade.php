@@ -326,9 +326,14 @@
 
     <table class="main-table">
         <tr>
-            <td style="width: 25%;"><span class="bold">SERVICIO DE ORIGEN:</span></td>
-            <td style="width: 45%;"><span class="filled-data">{{ $history->serv_origen ?? '-' }}</span></td>
-            <td style="width: 30%;"><span class="bold">CAMA:</span> &nbsp;<span class="filled-data">{{ $history->cama ?? '-' }}</span></td>
+            @php $servOrigen = strtoupper($history->serv_origen ?? ''); @endphp
+            <td style="width: 18%;"><span class="bold">SERVICIO DE ORIGEN:</span></td>
+            <td style="width: 62%;">
+                @foreach(['URO','TOPI','TOP 2','OBS','UCI','UCIN','URPA','MED','CIRUG','GIN','PED','UCIN-NEO','C. EXT','URCA'] as $servicio)
+                    <span class="check-box {{ $servOrigen === $servicio ? 'active' : '' }}">{{ $servOrigen === $servicio ? 'X' : '' }}</span> {{ $servicio }}
+                @endforeach
+            </td>
+            <td style="width: 20%;"><span class="bold">CAMA:</span> &nbsp;<span class="filled-data">{{ $history->cama ?? '-' }}</span></td>
         </tr>
     </table>
 
@@ -356,60 +361,63 @@
         </tr>
     </table>
 
-    <div class="section-bar">ANTECEDENTES PERSONALES / MEDICACIÓN PREVIA</div>
+    <div class="section-bar">ANTECEDENTES PERSONALES</div>
     <table class="main-table text-center">
         <thead>
             <tr style="background-color: #f2f2f2;">
-                <th style="text-align: left; width: 32%;">DIAGNÓSTICO / CONDICIÓN</th>
-                <th style="width: 10%;">AÑO</th>
-                <th style="text-align: left; width: 26%;">MEDICACIÓN PREVIA</th>
-                <th style="text-align: left; width: 22%;">DIAGNÓSTICO / CONDICIÓN</th>
-                <th style="width: 10%;">AÑO</th>
+                <th style="text-align: left; width: 19%;">CONDICIÓN</th>
+                <th style="width: 7%;">AÑO Dx</th>
+                <th style="text-align: left; width: 18%;">MEDICACIÓN PREVIA</th>
+                <th style="text-align: left; width: 19%;">CONDICIÓN</th>
+                <th style="width: 7%;">AÑO Dx</th>
+                <th style="text-align: left; width: 18%;">MEDICACIÓN PREVIA</th>
+                <th style="text-align: left; width: 12%;">OTROS</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td style="text-align: left;"><span class="bold">DIABETES MELLITUS</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['diabetes']['anio'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="filled-data">{{ $history->antecedentes_personales['diabetes']['medicacion'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="bold">UROPATÍA OBSTRUCTIVA</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['uropatia_obs']['anio'] ?? '' }}</span></td>
-            </tr>
-            <tr>
-                <td style="text-align: left;"><span class="bold">HIPERTENSIÓN</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['hta']['anio'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="filled-data">{{ $history->antecedentes_personales['hta']['medicacion'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="bold">LITIASIS URINARIA</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['litiasis']['anio'] ?? '' }}</span></td>
-            </tr>
-            <tr>
-                <td style="text-align: left;"><span class="bold">ENFERMEDAD CV</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['enfermedad_cv']['anio'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="filled-data">{{ $history->antecedentes_personales['enfermedad_cv']['medicacion'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="bold">QUISTES / ERPQ</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['quistes_erpo']['anio'] ?? '' }}</span></td>
-            </tr>
-            <tr>
-                <td style="text-align: left;"><span class="bold">GLOMERULONEFRITIS</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['glomerulonefritis']['anio'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="filled-data">{{ $history->antecedentes_personales['glomerulonefritis']['medicacion'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="bold">TUBERCULOSIS</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['tuberculosis']['anio'] ?? '' }}</span></td>
-            </tr>
-            <tr>
-                <td style="text-align: left;"><span class="bold">VASCULITIS</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['vasculitis']['anio'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="filled-data">{{ $history->antecedentes_personales['vasculitis']['medicacion'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="bold">ERC</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['erc']['anio'] ?? '' }}</span></td>
-            </tr>
-            <tr>
-                <td style="text-align: left;"><span class="bold">LES</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['les']['anio'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="filled-data">{{ $history->antecedentes_personales['les']['medicacion'] ?? '' }}</span></td>
-                <td style="text-align: left;"><span class="bold">CIRUGÍAS PREVIAS</span></td>
-                <td><span class="filled-data">{{ $history->antecedentes_personales['cirugias']['anio'] ?? '' }}</span></td>
-            </tr>
+            @php
+                $ant = $history->antecedentes_personales ?? [];
+                $leftAntecedentes = [
+                    ['diabetes', 'DIABETES MELLITUS'],
+                    ['hta', 'HIPERTENSIÓN'],
+                    ['enfermedad_cv', 'ENFERMEDAD CV'],
+                    ['glomerulonefritis', 'GLOMERULONEFRITIS'],
+                    ['vasculitis', 'VASCULITIS'],
+                    ['les', 'LES'],
+                ];
+                $rightAntecedentes = [
+                    ['uropatia_obs', 'UROPATÍA OBSTRUCTIVA'],
+                    ['litiasis', 'LITIASIS URINARIA'],
+                    ['quistes_erpo', 'QUISTES/ERPQ'],
+                    ['tuberculosis', 'TUBERCULOSIS'],
+                    ['erc', 'ERC'],
+                    ['cirugias', 'CIRUGÍAS PREVIAS'],
+                ];
+                $otrosAntecedentes = [
+                    ['obesidad', 'OBESIDAD'],
+                    ['tabaquismo', 'TABAQUISMO'],
+                    ['alcoholismo', 'ALCOHOLISMO'],
+                    ['sedentarismo', 'SEDENTARISMO'],
+                    ['transfusiones', 'TRANSFUSIONES'],
+                    ['otros', 'OTRAS'],
+                ];
+            @endphp
+            @foreach($leftAntecedentes as $idx => $left)
+                @php
+                    $right = $rightAntecedentes[$idx];
+                    $otro = $otrosAntecedentes[$idx];
+                    $otroMarcado = !empty($ant[$otro[0]]['anio']) || !empty($ant[$otro[0]]['medicacion']);
+                @endphp
+                <tr>
+                    <td style="text-align: left;"><span class="bold">{{ $left[1] }}</span></td>
+                    <td><span class="filled-data">{{ $ant[$left[0]]['anio'] ?? '' }}</span></td>
+                    <td style="text-align: left;"><span class="filled-data">{{ $ant[$left[0]]['medicacion'] ?? '' }}</span></td>
+                    <td style="text-align: left;"><span class="bold">{{ $right[1] }}</span></td>
+                    <td><span class="filled-data">{{ $ant[$right[0]]['anio'] ?? '' }}</span></td>
+                    <td style="text-align: left;"><span class="filled-data">{{ $ant[$right[0]]['medicacion'] ?? '' }}</span></td>
+                    <td style="text-align: left;"><span class="bold">{{ $otro[1] }}</span> <span class="check-box {{ $otroMarcado ? 'active' : '' }}">{{ $otroMarcado ? 'X' : '' }}</span></td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 
@@ -439,20 +447,21 @@
             <td style="width: 25%;"><span class="bold">PA:</span> <span class="filled-data">{{ $history->pa ?? '-' }}</span> mmHg</td>
             <td style="width: 25%;"><span class="bold">FC:</span> <span class="filled-data">{{ $history->fc ?? '-' }}</span> lpm</td>
             <td style="width: 25%;"><span class="bold">FR:</span> <span class="filled-data">{{ $history->fr ?? '-' }}</span> rpm</td>
-            <td style="width: 25%;"><span class="bold">Sat O2:</span> <span class="filled-data">{{ $history->sat_o2 ?? '-' }}</span> %</td>
+            <td style="width: 25%;"><span class="bold">SatO₂:</span> <span class="filled-data">{{ $history->sat_o2 ?? '-' }}</span> %</td>
         </tr>
         <tr>
             <td colspan="2"><span class="bold">PESO INGRESO:</span> <span class="filled-data">{{ $history->peso_ingreso ?? '-' }}</span> kg</td>
-            <td colspan="2"><span class="bold">TALLA:</span> <span class="filled-data">{{ $history->talla_ingreso ?? '-' }}</span> m</td>
+            <td><span class="bold">TALLA:</span> <span class="filled-data">{{ $history->talla_ingreso ?? '-' }}</span> m</td>
+            <td><span class="bold">FiO₂:</span> <span class="filled-data">{{ $history->fio ?? '-' }}</span></td>
         </tr>
         <tr>
             <td colspan="4" style="vertical-align: top; line-height: 1.35; padding-bottom: 10px;">
-                <span class="bold">ASPECTO GENERAL:</span> <span class="filled-data" style="text-transform:none;">{{ $history->aspecto_general ?? '-' }}</span>br>
-                <span class="bold">PIEL / TCSC:</span> <span class="filled-data" style="text-transform:none;">{{ $history->piel ?? '-' }} / {{ $history->tcsc ?? '-' }}</span>br>
-                <span class="bold">CARDIOVASCULAR / RESPIRATORIO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->cardiovascular ?? '-' }} | {{ $history->respiratorio ?? '-' }}</span>br>
-                <span class="bold">ABDOMEN:</span> <span class="filled-data" style="text-transform:none;">{{ $history->abdomen ?? '-' }}</span>br>
-                <span class="bold">GÉNITO URINARIO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->g_urinario ?? '-' }}</span>br>
-                <span class="bold">NEUROLÓGICO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->neurologico ?? '-' }}</span>br>
+                <span class="bold">ASPECTO GENERAL:</span> <span class="filled-data" style="text-transform:none;">{{ $history->aspecto_general ?? '-' }}</span><br>
+                <span class="bold">PIEL / TCSC:</span> <span class="filled-data" style="text-transform:none;">{{ $history->piel ?? '-' }} / {{ $history->tcsc ?? '-' }}</span><br>
+                <span class="bold">CARDIOVASCULAR / RESPIRATORIO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->cardiovascular ?? '-' }} | {{ $history->respiratorio ?? '-' }}</span><br>
+                <span class="bold">ABDOMEN:</span> <span class="filled-data" style="text-transform:none;">{{ $history->abdomen ?? '-' }}</span><br>
+                <span class="bold">GÉNITO URINARIO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->g_urinario ?? '-' }}</span><br>
+                <span class="bold">NEUROLÓGICO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->neurologico ?? '-' }}</span><br>
                 <span class="bold">ESTADO NUTRICIONAL:</span> <span class="filled-data" style="text-transform:none;">{{ $history->e_nutricional ?? '-' }}</span>
             </td>
         </tr>
@@ -605,7 +614,32 @@
         </tr>
     </table>
 
-    <div class="section-bar">PLAN DE CIERRE CLÍNICO / CONSIDERACIONES AL ALTA</div>
+    <div class="section-bar">DIAGNÓSTICOS COMPLEMENTARIOS</div>
+    <table class="main-table">
+        @php $diagnosticosComplementarios = is_array($history->diagnostico) ? $history->diagnostico : []; @endphp
+        @for($i = 1; $i <= 5; $i++)
+            <tr><td><span class="bold">{{ $i }}.-</span> <span class="filled-data" style="text-transform:none;">{{ $diagnosticosComplementarios[$i - 1] ?? '' }}</span></td></tr>
+        @endfor
+    </table>
+
+    <div class="section-bar">FECHA DE ALTA / CONSIDERACIONES AL ALTA</div>
+    <table class="main-table">
+        <tr>
+            <td style="width: 20%;"><span class="bold">FECHA DE ALTA:</span> <span class="filled-data">{{ $history->f_alta ? \Carbon\Carbon::parse($history->f_alta)->format('d/m/Y') : '-' }}</span></td>
+            <td style="width: 80%;">
+                <span class="bold">CONSIDERACIONES:</span>
+                <span class="check-box"></span> SALE DE TTM&nbsp;&nbsp;
+                <span class="check-box"></span> CONTINÚA EN TTM&nbsp;&nbsp;
+                <span class="check-box"></span> RETIRO VOLUNTARIO&nbsp;&nbsp;
+                <span class="check-box"></span> PASA A URCA&nbsp;&nbsp;
+                <span class="check-box"></span> SEGUIMIENTO EN CLÍNICA TERCERIZADA&nbsp;&nbsp;
+                <span class="check-box {{ $history->motivo_fallece ? 'active' : '' }}">{{ $history->motivo_fallece ? 'X' : '' }}</span> FALLECE
+            </td>
+        </tr>
+        <tr><td colspan="2"><span class="bold">MOTIVO:</span> <span class="filled-data" style="text-transform:none;">{{ $history->motivo_fallece ?? '-' }}</span></td></tr>
+    </table>
+
+    <div class="section-bar">PLAN DE CIERRE CLÍNICO / PENDIENTES AL ALTA</div>
     <table class="main-table">
         <tr>
             <td colspan="2"><span class="bold">CONSIDERACIONES AL ALTA:</span> <span class="filled-data" style="text-transform:none;">{{ $history->consideraciones_alta ?? '-' }}</span></td>
