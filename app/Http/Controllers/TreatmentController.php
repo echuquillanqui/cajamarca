@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Treatment;
 use App\Models\Order; // Importación necesaria para buscar la orden
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TreatmentController extends Controller
 {
@@ -15,6 +16,7 @@ class TreatmentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
+        $fechaFiltro = $request->input('fecha_filtro', Carbon::today()->format('Y-m-d'));
         $query = Order::with([
             'patient',
             'treatments' => function ($treatments) {
@@ -24,6 +26,12 @@ class TreatmentController extends Controller
             ->whereHas('treatments')
             ->withCount('treatments')
             ->latest('updated_at');
+
+        if ($request->filled('fecha_filtro')) {
+            $query->whereDate('fecha', $fechaFiltro);
+        } else {
+            $query->whereDate('fecha', Carbon::today());
+        }
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($search) {
@@ -41,7 +49,7 @@ class TreatmentController extends Controller
 
         $treatmentOrders = $query->paginate(10)->withQueryString();
 
-        return view('treatments.index', compact('treatmentOrders', 'search'));
+        return view('treatments.index', compact('treatmentOrders', 'search', 'fechaFiltro'));
     }
 
     public function edit($order_id)

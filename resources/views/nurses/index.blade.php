@@ -12,10 +12,16 @@
     <div class="card mb-4 shadow-sm border-0 bg-light">
         <div class="card-body">
             <form method="GET" action="{{ route('nurses.index') }}" class="row g-2 align-items-center">
-                <div class="col-md-10">
+                <div class="col-md-7">
                     <div class="input-group">
                         <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <input type="text" name="search" class="form-control" placeholder="Buscar por paciente, DNI, orden, SOAPIE, UF o filtro..." value="{{ $search ?? '' }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-regular fa-calendar-days"></i></span>
+                        <input type="date" name="fecha_filtro" class="form-control" value="{{ $fechaFiltro ?? \Carbon\Carbon::today()->format('Y-m-d') }}">
                     </div>
                 </div>
                 <div class="col-md-2 d-flex gap-2">
