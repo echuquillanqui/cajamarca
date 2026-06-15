@@ -9,6 +9,23 @@
         </div>
     </div>
 
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-body">
+            <form method="GET" action="{{ route('treatments.index') }}" class="row g-2 align-items-center">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Buscar por paciente, DNI, orden, P.A. u observaciones..." value="{{ $search ?? '' }}">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Buscar</button>
+                    <a href="{{ route('treatments.index') }}" class="btn btn-outline-secondary" title="Limpiar filtros"><i class="fa-solid fa-eraser"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white py-3 border-bottom">
             <span class="fw-bold text-secondary"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Monitoreo de Parámetros Clínicos por Hora</span>
@@ -74,7 +91,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
+                                <td colspan="10" class="text-center py-5 text-muted">
                                     <i class="fa-solid fa-gauge-high fa-3x mb-3 text-secondary opacity-50"></i>
                                     <p class="mb-0">No se registran monitoreos horarios en las diálisis del sistema.</p>
                                 </td>
@@ -86,7 +103,7 @@
         </div>
         @if(isset($treatments) && $treatments->hasPages())
             <div class="card-footer bg-white py-3">
-                {{ $treatments->links('pagination::bootstrap-5') }}
+                {{ $treatments->withQueryString()->links('pagination::bootstrap-5') }}
             </div>
         @endif
     </div>

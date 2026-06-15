@@ -10,10 +10,29 @@ class NurseController extends Controller
     public function __construct() {
         $this->middleware('auth');
     }
-    public function index()
+    public function index(Request $request)
     {
-        $nurses = Nurse::with('order.patient')->latest()->paginate(10);
-        return view('nurses.index', compact('nurses'));
+        $search = $request->input('search', '');
+        $query = Nurse::with(['order', 'patient', 'user'])->latest();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('patient', function ($p) use ($search) {
+                    $p->where('nombre', 'LIKE', '%' . $search . '%')
+                        ->orWhere('dni', 'LIKE', '%' . $search . '%');
+                })
+                ->orWhereHas('order', function ($o) use ($search) {
+                    $o->where('codigo', 'LIKE', '%' . $search . '%');
+                })
+                ->orWhere('s_subjetivo', 'LIKE', '%' . $search . '%')
+                ->orWhere('o_objetivo', 'LIKE', '%' . $search . '%')
+                ->orWhere('uf_efectivo', 'LIKE', '%' . $search . '%')
+                ->orWhere('asp_filtro', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $nurses = $query->paginate(10)->withQueryString();
+        return view('nurses.index', compact('nurses', 'search'));
     }
 
     public function edit(Nurse $nurse)

@@ -25,12 +25,11 @@ class HistoryController extends Controller
             $query->whereDate('fecha_ingreso_hd', Carbon::today());
         }
 
-        // 2. Filtro por Nombres / Apellidos del Paciente
+        // 2. Filtro por Nombres
         if ($request->filled('paciente_nombre')) {
             $nombre = $request->paciente_nombre;
             $query->whereHas('patient', function ($p) use ($nombre) {
-                $p->where('nombre', 'LIKE', '%' . $nombre . '%')
-                ->orWhere('apellido', 'LIKE', '%' . $nombre . '%');
+                $p->where('nombre', 'LIKE', '%' . $nombre . '%');
             });
         }
 
@@ -50,7 +49,9 @@ class HistoryController extends Controller
         // 5. Paginación de 15 registros conservando los parámetros de búsqueda en la URL
         $histories = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
 
-        return view('histories.index', compact('histories', 'request'));
+        $search = $request->get('paciente_nombre', '');
+
+        return view('histories.index', compact('histories', 'request', 'search'));
     }
 
     public function edit(History $history)

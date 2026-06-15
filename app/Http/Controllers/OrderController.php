@@ -34,12 +34,11 @@ class OrderController extends Controller
             $query->whereDate('fecha', Carbon::today());
         }
 
-        // 3. Filtro por Nombres y Apellidos del Paciente
+        // 3. Filtro por Nombres
         if ($request->filled('paciente_nombre')) {
             $nombreBusqueda = $request->paciente_nombre;
             $query->whereHas('patient', function ($q) use ($nombreBusqueda) {
-                $q->where('nombre', 'like', '%' . $nombreBusqueda . '%')
-                  ->orWhere('apellido', 'like', '%' . $nombreBusqueda . '%'); // Ajusta 'apellido' si cambia en tu BD
+                $q->where('nombre', 'like', '%' . $nombreBusqueda . '%'); // Ajusta 'apellido' si cambia en tu BD
             });
         }
 
@@ -51,8 +50,18 @@ class OrderController extends Controller
             });
         }
 
-        // 5. Paginación configurada a 15 registros por página conservando el orden descendente
-        $orders = $query->orderBy('id', 'desc')->paginate(15);
+        // 5. Filtro por tipo de orden
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        // 6. Filtro por estado de la orden
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        // 7. Paginación configurada a 15 registros por página conservando el orden descendente
+        $orders = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
 
         // Retornamos la vista pasando también los filtros aplicados para mantenerlos en los inputs de la vista
         return view('orders.index', compact('orders', 'request'));

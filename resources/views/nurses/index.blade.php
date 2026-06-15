@@ -9,6 +9,23 @@
         </div>
     </div>
 
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-body">
+            <form method="GET" action="{{ route('nurses.index') }}" class="row g-2 align-items-center">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Buscar por paciente, DNI, orden, SOAPIE, UF o filtro..." value="{{ $search ?? '' }}">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Buscar</button>
+                    <a href="{{ route('nurses.index') }}" class="btn btn-outline-secondary" title="Limpiar filtros"><i class="fa-solid fa-eraser"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white py-3 border-bottom">
             <span class="fw-bold text-secondary"><i class="fa-solid fa-user-nurse text-primary me-2"></i>Notas de Enfermería Activas</span>
@@ -78,7 +95,7 @@
         </div>
         @if($nurses->hasPages())
             <div class="card-footer bg-white py-3">
-                {{ $nurses->links('pagination::bootstrap-5') }}
+                {{ $nurses->withQueryString()->links('pagination::bootstrap-5') }}
             </div>
         @endif
     </div>

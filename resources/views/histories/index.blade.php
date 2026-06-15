@@ -12,7 +12,7 @@
                            value="{{ $request->get('fecha_filtro', !request()->has('clear_filters') ? \Carbon\Carbon::today()->format('Y-m-d') : '') }}">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small fw-bold text-secondary">Paciente (Nombres/Apellidos)</label>
+                    <label class="form-label small fw-bold text-secondary">Paciente</label>
                     <input type="text" name="paciente_nombre" class="form-control" placeholder="Ej. Juan Pérez" value="{{ $request->get('paciente_nombre') }}">
                 </div>
                 <div class="col-md-2">
@@ -100,9 +100,6 @@
                                     <i class="fa-solid fa-file-pdf"></i>
                                 </a>
 
-                                <a href="{{ route('histories.show', $history->id) }}" class="btn btn-light border text-primary" title="Ver Historial Completo">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
                                 <a href="{{ route('histories.edit', $history->id) }}" class="btn btn-light border text-info" title="Editar Ficha">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
@@ -125,7 +122,7 @@
             </table>
         </div>
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $histories->links('pagination::bootstrap-5') }}
+            {{ $histories->withQueryString()->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>

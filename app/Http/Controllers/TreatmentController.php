@@ -12,10 +12,27 @@ class TreatmentController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $treatments = Treatment::with('order.patient')->latest()->paginate(10);
-        return view('treatments.index', compact('treatments'));
+        $search = $request->input('search', '');
+        $query = Treatment::with(['order', 'patient', 'user'])->latest();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('patient', function ($p) use ($search) {
+                    $p->where('nombre', 'LIKE', '%' . $search . '%')
+                        ->orWhere('dni', 'LIKE', '%' . $search . '%');
+                })
+                ->orWhereHas('order', function ($o) use ($search) {
+                    $o->where('codigo', 'LIKE', '%' . $search . '%');
+                })
+                ->orWhere('pa', 'LIKE', '%' . $search . '%')
+                ->orWhere('observaciones', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $treatments = $query->paginate(10)->withQueryString();
+        return view('treatments.index', compact('treatments', 'search'));
     }
 
     public function edit($order_id)
