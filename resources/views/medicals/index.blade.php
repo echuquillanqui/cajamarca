@@ -50,9 +50,14 @@
                                 <small class="text-muted">{{ $medical->user?->name ?? '-' }}</small>
                             </td>
                             <td class="text-end pe-4">
-                                <a href="{{ route('medicals.edit', $medical->id) }}" class="btn btn-sm btn-outline-primary" title="Registro Médico">
-                                    <i class="fa-solid fa-file-medical"></i> Registro Médico
-                                </a>
+                                <div class="btn-group">
+                                    <a href="{{ route('medicals.edit', $medical->id) }}" class="btn btn-sm btn-outline-primary" title="Registro Médico">
+                                        <i class="fa-solid fa-file-medical"></i> Registro Médico
+                                    </a>
+                                    <a href="{{ route('orders.hemodialysis.pdf', $medical->order_id) }}" target="_blank" class="btn btn-sm btn-outline-danger" title="PDF Hemodiálisis">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         @empty

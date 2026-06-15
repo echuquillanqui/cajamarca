@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -174,7 +175,34 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        $order->load(['patient', 'user', 'medicals', 'nurses', 'treatments']);
+
         return view('orders.show', compact('order'));
+    }
+
+    public function hemodialysisPdf(Order $order)
+    {
+        $order->load([
+            'patient',
+            'user',
+            'medicals' => fn ($query) => $query->latest('fecha_sesion'),
+            'nurses' => fn ($query) => $query->latest(),
+            'treatments' => fn ($query) => $query->orderBy('hora'),
+        ]);
+
+        abort_unless($order->tipo === 'HEMODIALISIS', 404);
+
+        $medical = $order->medicals->first();
+        $nurse = $order->nurses->first();
+        $treatments = $order->treatments;
+
+        $pdf = Pdf::loadView('orders.hemodialysis_pdf', compact('order', 'medical', 'nurse', 'treatments'))
+            ->setPaper('a4', 'portrait')
+            ->setWarnings(false);
+
+        $filename = 'HEMODIALISIS-' . ($order->codigo ?? $order->id) . '-' . ($order->patient?->dni ?? 'paciente') . '.pdf';
+
+        return $pdf->stream($filename);
     }
 
     public function edit(Order $order)
