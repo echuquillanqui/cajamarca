@@ -11,11 +11,27 @@
         </h1>
     </div>
 
-    <form action="{{ route('laboratories.update', $laboratory) }}" method="POST">
-        @csrf
-        @method('PUT')
+    <ul class="nav nav-pills gap-2 mb-4" id="laboratory-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill px-4" id="control-actual-tab" data-bs-toggle="pill" data-bs-target="#control-actual" type="button" role="tab" aria-controls="control-actual" aria-selected="true">
+                <i class="fa-solid fa-clipboard-check me-2"></i>Control actual
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4" id="historial-examenes-tab" data-bs-toggle="pill" data-bs-target="#historial-examenes" type="button" role="tab" aria-controls="historial-examenes" aria-selected="false">
+                <i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de exámenes
+                <span class="badge bg-light text-primary ms-2">{{ $historyLaboratories->count() }}</span>
+            </button>
+        </li>
+    </ul>
 
-        <div class="row g-4">
+    <div class="tab-content" id="laboratory-tabs-content">
+        <div class="tab-pane fade show active" id="control-actual" role="tabpanel" aria-labelledby="control-actual-tab" tabindex="0">
+            <form action="{{ route('laboratories.update', $laboratory) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="row g-4">
             <div class="col-xl-4 col-lg-5">
                 <div class="card h-100">
                     <div class="card-header">
@@ -201,8 +217,77 @@
                     </div>
                 </div>
             </div>
+                </div>
+            </form>
         </div>
-    </form>
+
+        <div class="tab-pane fade" id="historial-examenes" role="tabpanel" aria-labelledby="historial-examenes-tab" tabindex="0">
+            <div class="card">
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between gap-2">
+                    <span><i class="fa-solid fa-table-list text-secondary me-2"></i>Exámenes ya rellenados del paciente</span>
+                    <span class="badge bg-secondary rounded-pill align-self-md-center">{{ $historyLaboratories->count() }} registros</span>
+                </div>
+                <div class="card-body">
+                    @if($historyLaboratories->isEmpty())
+                        <div class="text-center py-5 text-muted bg-light rounded-3 border border-dashed">
+                            <i class="fa-solid fa-folder-open fa-3x mb-3 d-block text-black-50 opacity-50"></i>
+                            <h5 class="fw-bold">Sin historial registrado</h5>
+                            <p class="mb-0">Cuando este paciente tenga controles anteriores completados, aparecerán ordenados desde el más reciente.</p>
+                        </div>
+                    @else
+                        <div class="accordion" id="laboratory-history-accordion">
+                            @foreach($historyLaboratories as $history)
+                                <div class="accordion-item border rounded-3 mb-3 overflow-hidden">
+                                    <h2 class="accordion-header" id="history-heading-{{ $history->id }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#history-collapse-{{ $history->id }}" aria-expanded="false" aria-controls="history-collapse-{{ $history->id }}">
+                                            <span class="d-flex flex-column flex-md-row gap-2 gap-md-4 w-100 pe-3">
+                                                <strong>{{ optional($history->fecha)->format('d/m/Y') ?? 'Sin fecha' }}</strong>
+                                                <span>{{ $history->tipo ?? 'Control de laboratorio' }}</span>
+                                                <small class="text-muted ms-md-auto">Orden #{{ $history->order->codigo ?? $history->order_id }}</small>
+                                            </span>
+                                        </button>
+                                    </h2>
+                                    <div id="history-collapse-{{ $history->id }}" class="accordion-collapse collapse" aria-labelledby="history-heading-{{ $history->id }}" data-bs-parent="#laboratory-history-accordion">
+                                        <div class="accordion-body">
+                                            <div class="row g-3 mb-3 small text-muted">
+                                                <div class="col-md-6"><i class="fa-solid fa-user-md me-1 text-primary"></i>Registrado por: {{ $history->user->name ?? 'Sistema' }}</div>
+                                                <div class="col-md-6 text-md-end"><i class="fa-solid fa-calendar-check me-1 text-primary"></i>Actualizado: {{ optional($history->updated_at)->format('d/m/Y H:i') }}</div>
+                                            </div>
+
+                                            @if(!empty($history->observaciones))
+                                                <div class="alert alert-light border small">
+                                                    <strong>Observaciones:</strong> {{ $history->observaciones }}
+                                                </div>
+                                            @endif
+
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-striped align-middle mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Examen / Parámetro</th>
+                                                            <th>Resultado</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach(($history->resultados ?? []) as $key => $result)
+                                                            <tr>
+                                                                <td class="fw-semibold">{{ is_array($result) ? ($result['clave'] ?? 'Sin examen') : $key }}</td>
+                                                                <td>{{ is_array($result) ? ($result['valor'] ?? 'Sin resultado') : $result }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 

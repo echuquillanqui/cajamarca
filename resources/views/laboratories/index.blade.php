@@ -49,8 +49,7 @@
                         <template x-for="lab in filteredLaboratories()" :key="lab.id">
                             <tr>
                                 <td class="ps-4 fw-medium text-dark" x-text="formatDate(lab.fecha)"></td>
-                                
-                                TR>
+
                                 <td>
                                     <div class="fw-bold text-dark" x-text="lab.patient ? lab.patient.nombre : 'N/A'"></div>
                                     <small class="text-muted">ID Paciente: <span x-text="lab.patient_id"></span></small>

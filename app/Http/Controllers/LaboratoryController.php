@@ -53,7 +53,17 @@ class LaboratoryController extends Controller
     public function edit(Laboratory $laboratory)
     {
         $laboratory->load(['patient', 'order']);
-        return view('laboratories.edit', compact('laboratory'));
+
+        $historyLaboratories = Laboratory::with(['order', 'user'])
+            ->where('patient_id', $laboratory->patient_id)
+            ->where('id', '!=', $laboratory->id)
+            ->whereNotNull('resultados')
+            ->whereJsonLength('resultados', '>', 0)
+            ->orderBy('fecha', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('laboratories.edit', compact('laboratory', 'historyLaboratories'));
     }
 
     /**
