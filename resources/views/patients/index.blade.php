@@ -308,7 +308,9 @@
 
             openEdit(patient) {
                 this.isEdit = true;
-                this.form = Object.assign({}, patient);
+                this.form = Object.assign({}, patient, {
+                    fecha_nacimiento: this.normalizeDate(patient.fecha_nacimiento)
+                });
                 if (this.modalInstance) this.modalInstance.show();
             },
 
@@ -335,9 +337,15 @@
                 }
             },
 
-            formatDate(dateString) {
+            normalizeDate(dateString) {
                 if (!dateString) return '';
-                const parts = dateString.split('-');
+                return String(dateString).split('T')[0];
+            },
+
+            formatDate(dateString) {
+                const normalizedDate = this.normalizeDate(dateString);
+                if (!normalizedDate) return '';
+                const parts = normalizedDate.split('-');
                 if (parts.length === 3) {
                     return `${parts[2]}/${parts[1]}/${parts[0]}`;
                 }

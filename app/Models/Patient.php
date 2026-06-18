@@ -13,7 +13,7 @@ class Patient extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'fecha_nacimiento' => 'date',
+        'fecha_nacimiento' => 'date:Y-m-d',
     ];
 
     public function orders(): HasMany
