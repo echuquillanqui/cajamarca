@@ -7,6 +7,7 @@ use App\Http\Controllers\MedicalController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TreatmentController;
 use App\Http\Controllers\UserController;
 
@@ -32,7 +33,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
     Route::resource('patients', PatientController::class)->except(['create', 'edit', 'show']);
-    Route::get('orders/export/excel', [OrderController::class, 'exportExcel'])->name('orders.export.excel');
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
     Route::resource('orders', OrderController::class);
     Route::get('orders/{order}/hemodialysis-pdf', [OrderController::class, 'hemodialysisPdf'])->name('orders.hemodialysis.pdf');
     Route::resource('histories', HistoryController::class);

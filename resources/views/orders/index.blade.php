@@ -8,8 +8,8 @@
             <p class="text-muted small mb-0">Gestión integrada de Historias, Hemodiálisis y Laboratorios.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('orders.export.excel', request()->query()) }}" class="btn btn-success rounded-pill px-4">
-                <i class="fa-solid fa-file-excel me-2"></i>Exportar Excel
+            <a href="{{ route('reports.index', request()->query()) }}" class="btn btn-success rounded-pill px-4">
+                <i class="fa-solid fa-print me-2"></i>Ir a Reportes
             </a>
             <a href="{{ route('orders.create') }}" class="btn btn-primary rounded-pill px-4" style="background-color: var(--hc-primary); border: none;">
                 <i class="fa-solid fa-plus me-2"></i>Nueva Orden

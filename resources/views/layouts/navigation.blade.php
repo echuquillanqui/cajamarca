@@ -60,8 +60,8 @@
                             <i class="fa-solid fa-print me-1"></i> Reportes
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="reportesDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-file-excel text-success me-2"></i> Exportar Historias (Excel)</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-file-pdf text-danger me-2"></i> Reportes Clínicos (PDF)</a></li>
+                            <li><a class="dropdown-item" href="{{ route('reports.index') }}"><i class="fa-solid fa-filter text-info me-2"></i> Filtros de Reportes</a></li>
+                            <li><a class="dropdown-item" href="{{ route('reports.export.excel') }}"><i class="fa-solid fa-file-excel text-success me-2"></i> Exportar Reporte Clínico</a></li>
                         </ul>
                     </li>
                 @endauth
