@@ -118,8 +118,30 @@ class ClinicalReportsExport implements WithMultipleSheets
     private function treatmentHeadings(): array { return array_merge($this->commonHeadings(), ['Hora', 'PA', 'PAM', 'FC', 'SaO2', 'UF hora', 'Sodio', 'QB', 'RA', 'RV', 'PTM', 'Observaciones', 'Laboratorio control']); }
     private function treatmentRows(Collection $orderIds): Collection { return Treatment::with(['order', 'patient', 'user'])->whereIn('order_id', $orderIds)->get()->map(fn (Treatment $treatment) => array_merge($this->baseColumns($treatment), [$treatment->hora, $treatment->pa, $treatment->pam, $treatment->fc, $treatment->sao2, $treatment->uf_hora, $treatment->sodio, $treatment->qb, $treatment->ra, $treatment->rv, $treatment->ptm, $treatment->observaciones, $treatment->laboratorio_control])); }
 
-    private function laboratoryHeadings(): array { return array_merge($this->commonHeadings(), ['Fecha laboratorio', 'Tipo', 'Resultados', 'Observaciones']); }
-    private function laboratoryRows(Collection $orderIds): Collection { return Laboratory::with(['order', 'patient', 'user'])->whereIn('order_id', $orderIds)->get()->map(fn (Laboratory $laboratory) => array_merge($this->baseColumns($laboratory), [$laboratory->fecha?->format('d/m/Y'), $laboratory->tipo, $this->formatJson($laboratory->resultados), $laboratory->observaciones])); }
+    private function laboratoryHeadings(): array { return array_merge($this->commonHeadings(), ['Fecha laboratorio', 'Tipo', 'Prueba', 'Resultado', 'Observaciones']); }
+    private function laboratoryRows(Collection $orderIds): Collection
+    {
+        return Laboratory::with(['order', 'patient', 'user'])
+            ->whereIn('order_id', $orderIds)
+            ->get()
+            ->flatMap(function (Laboratory $laboratory) {
+                $baseColumns = array_merge($this->baseColumns($laboratory), [
+                    $laboratory->fecha?->format('d/m/Y'),
+                    $laboratory->tipo,
+                ]);
+
+                if (blank($laboratory->resultados)) {
+                    return [array_merge($baseColumns, [null, null, $laboratory->observaciones])];
+                }
+
+                return collect($laboratory->resultados)->map(function ($result, $key) use ($baseColumns, $laboratory) {
+                    $prueba = is_array($result) ? ($result['clave'] ?? 'Sin prueba') : $key;
+                    $resultado = is_array($result) ? ($result['valor'] ?? null) : $result;
+
+                    return array_merge($baseColumns, [$prueba, $resultado, $laboratory->observaciones]);
+                });
+            });
+    }
 
     private function completeHeadings(): array { return ['Código', 'Fecha', 'Tipo', 'Estado', 'Paciente', 'DNI', 'Responsable', 'Observaciones', 'Historias', 'Medicals', 'Nurses', 'Treatments', 'Laboratories']; }
     private function completeRows(Collection $orderIds): Collection
