@@ -3,9 +3,14 @@
 @section('content')
 <div class="container px-4">
     <div class="mb-4">
-        <a href="{{ route('laboratories.index') }}" class="btn btn-sm btn-light border text-secondary px-3 rounded-pill mb-3">
-            <i class="fa-solid fa-arrow-left me-1"></i> Volver al listado
-        </a>
+        <div class="d-flex gap-2 flex-wrap mb-3">
+            <a href="{{ route('laboratories.index') }}" class="btn btn-sm btn-light border text-secondary px-3 rounded-pill">
+                <i class="fa-solid fa-arrow-left me-1"></i> Volver al listado
+            </a>
+            <a href="{{ route('laboratories.pdf', $laboratory) }}" target="_blank" class="btn btn-sm btn-danger px-3 rounded-pill">
+                <i class="fa-solid fa-file-pdf me-1"></i> PDF individual
+            </a>
+        </div>
         <h1 class="h3 mb-0" style="color: #0f3057; font-weight: 700;">
             <i class="fa-solid fa-file-medical text-primary me-2"></i>Monitoreo de Laboratorio - Pacientes en Hemodiálisis
         </h1>

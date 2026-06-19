@@ -9,11 +9,13 @@ use App\Models\Medical;
 use App\Models\Nurse;
 use App\Models\Treatment;
 use App\Models\Laboratory; 
+use App\Exports\ClinicalReportsExport;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -66,6 +68,20 @@ class OrderController extends Controller
 
         // Retornamos la vista pasando también los filtros aplicados para mantenerlos en los inputs de la vista
         return view('orders.index', compact('orders', 'request'));
+    }
+
+
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->only(['fecha_filtro', 'paciente_nombre', 'paciente_dni', 'tipo', 'estado']);
+
+        if (empty($filters['fecha_filtro'])) {
+            $filters['fecha_filtro'] = Carbon::today()->format('Y-m-d');
+        }
+
+        $filename = 'reporte-clinico-' . now()->format('Ymd-His') . '.xlsx';
+
+        return Excel::download(new ClinicalReportsExport($filters), $filename);
     }
 
     public function create()

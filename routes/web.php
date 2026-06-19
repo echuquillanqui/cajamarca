@@ -32,6 +32,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
     Route::resource('patients', PatientController::class)->except(['create', 'edit', 'show']);
+    Route::get('orders/export/excel', [OrderController::class, 'exportExcel'])->name('orders.export.excel');
     Route::resource('orders', OrderController::class);
     Route::get('orders/{order}/hemodialysis-pdf', [OrderController::class, 'hemodialysisPdf'])->name('orders.hemodialysis.pdf');
     Route::resource('histories', HistoryController::class);
@@ -39,5 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('medicals', MedicalController::class);
     Route::resource('nurses', NurseController::class);
     Route::resource('treatments', TreatmentController::class);
+    Route::get('laboratories/report/range-pdf', [LaboratoryController::class, 'rangePdf'])->name('laboratories.range.pdf');
+    Route::get('laboratories/{laboratory}/pdf', [LaboratoryController::class, 'pdf'])->name('laboratories.pdf');
     Route::resource('laboratories', LaboratoryController::class);
 });

@@ -9,8 +9,18 @@
         </h1>
         
         <div class="d-flex gap-2 align-items-center flex-wrap">
-            <form action="{{ route('laboratories.index') }}" method="GET" class="mb-0">
-                <input type="date" name="date" class="form-control rounded-pill border-2 border-primary border-opacity-25" value="{{ $date ?? date('Y-m-d') }}" onchange="this.form.submit()">
+            <form action="{{ route('laboratories.index') }}" method="GET" class="d-flex gap-2 align-items-center flex-wrap mb-0">
+                <input type="date" name="date" class="form-control rounded-pill border-2 border-primary border-opacity-25" value="{{ $date ?? date('Y-m-d') }}" title="Filtrar por un día" onchange="this.form.submit()">
+                <input type="date" name="date_from" class="form-control rounded-pill border-2 border-success border-opacity-25" value="{{ $dateFrom ?? '' }}" title="Fecha inicial">
+                <input type="date" name="date_to" class="form-control rounded-pill border-2 border-success border-opacity-25" value="{{ $dateTo ?? '' }}" title="Fecha final">
+                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                    <i class="fa-solid fa-filter me-1"></i> Filtrar rango
+                </button>
+                @if(!empty($dateFrom) && !empty($dateTo))
+                    <a href="{{ route('laboratories.range.pdf', ['date_from' => $dateFrom, 'date_to' => $dateTo]) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3">
+                        <i class="fa-solid fa-file-pdf me-1"></i> PDF rango
+                    </a>
+                @endif
             </form>
             <div class="position-relative" style="min-width: 350px;">
                 <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
@@ -80,6 +90,10 @@
                                         <a :href="'/laboratories/' + lab.id + '/edit'" 
                                            class="btn btn-sm btn-outline-primary rounded-pill px-3 me-2">
                                             <i class="fa-solid fa-pen-to-square me-1"></i> Resultados
+                                        </a>
+                                        <a :href="'/laboratories/' + lab.id + '/pdf'" target="_blank"
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            <i class="fa-solid fa-file-pdf me-1"></i> PDF
                                         </a>
                                     </div>
                                 </td>
