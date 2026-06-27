@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4" x-data="patientModule()">
+<div class="container px-4" x-data="patientModule()">
     
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
