@@ -56,7 +56,111 @@ class HistoryController extends Controller
 
     public function edit(History $history)
     {
-        return view('histories.edit', compact('history'));
+        $prefillHistory = $this->findPreviousFilledHistory($history);
+
+        if ($prefillHistory) {
+            $this->prefillEmptyClinicalFields($history, $prefillHistory);
+        }
+
+        return view('histories.edit', compact('history', 'prefillHistory'));
+    }
+
+    private function findPreviousFilledHistory(History $history): ?History
+    {
+        return History::where('patient_id', $history->patient_id)
+            ->where(function ($query) use ($history) {
+                $query->whereDate('fecha_ingreso_hd', '<', $history->fecha_ingreso_hd)
+                    ->orWhere(function ($sameDateQuery) use ($history) {
+                        $sameDateQuery->whereDate('fecha_ingreso_hd', $history->fecha_ingreso_hd)
+                            ->where('id', '<', $history->id);
+                    });
+            })
+            ->orderByDesc('fecha_ingreso_hd')
+            ->orderByDesc('id')
+            ->get()
+            ->first(fn (History $candidate) => $this->hasClinicalData($candidate));
+    }
+
+    private function prefillEmptyClinicalFields(History $history, History $source): void
+    {
+        $historyHasClinicalData = $this->hasClinicalData($history);
+
+        foreach ($this->prefillableClinicalFields() as $field) {
+            $sourceValue = $source->getAttribute($field);
+
+            if (!$this->isFilledClinicalValue($field, $sourceValue)) {
+                continue;
+            }
+
+            if (!$historyHasClinicalData || !$this->isFilledClinicalValue($field, $history->getAttribute($field))) {
+                $history->setAttribute($field, $sourceValue);
+            }
+        }
+    }
+
+    private function hasClinicalData(History $history): bool
+    {
+        foreach ($this->prefillableClinicalFields() as $field) {
+            if ($this->isFilledClinicalValue($field, $history->getAttribute($field))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isFilledClinicalValue(string $field, mixed $value): bool
+    {
+        if (is_null($value)) {
+            return false;
+        }
+
+        if (is_array($value)) {
+            return !empty(array_filter($value, fn ($item) => $this->hasFilledNestedValue($item)));
+        }
+
+        if (is_bool($value)) {
+            return $value === true;
+        }
+
+        if (is_numeric($value) && in_array($field, ['vacuna_ingreso', 'vacuna_alta'], true)) {
+            return (float) $value > 0;
+        }
+
+        if (is_string($value)) {
+            $normalized = trim($value);
+
+            return $normalized !== '' && !($field === 'ningun_se' && strtoupper($normalized) === 'NINGUNO');
+        }
+
+        return true;
+    }
+
+    private function hasFilledNestedValue(mixed $value): bool
+    {
+        if (is_array($value)) {
+            return !empty(array_filter($value, fn ($nested) => $this->hasFilledNestedValue($nested)));
+        }
+
+        return !is_null($value) && trim((string) $value) !== '';
+    }
+
+    private function prefillableClinicalFields(): array
+    {
+        return [
+            'serv_origen', 'cama', 'tiempo_enfermedad', 'inicio_enfermedad', 'curso_enfermedad',
+            'relato_cronologico', 'apetito', 'sed', 'heces', 'sueno', 'diuresis_ingreso',
+            'antecedentes_personales', 'antecedentes_familiares', 'alergias', 'biopsia_renal',
+            'biopsia_renal_anio', 'biopsia_renal_resultado', 'pa', 'fc', 'fr', 'sat_o2',
+            'peso_ingreso', 'talla_ingreso', 'fio', 'aspecto_general', 'piel', 'tcsc',
+            'respiratorio', 'cardiovascular', 'abdomen', 'g_urinario', 'neurologico',
+            'e_nutricional', 'tipo', 'localizacion', 'lado', 'estado', 'd_peritoneal',
+            't_renal', 'o_tipos', 'o_fecha', 'o_causa', 'hiv', 'hbsag', 'anti_hbc', 'vhc',
+            'anti_hbs', 'rpr', 'ningun_se', 'vacuna_ingreso', 'vacuna_alta', 'otras_vacunas',
+            'enf_cronica', 'descrip1', 'etiologia_cronica', 'enf_aguda', 'descrip2',
+            'etiologia_aguda', 'motivo_hospt_act', 'f_alta', 'consideraciones_alta',
+            'motivo_fallece', 'pendientes', 'peso_seco', 'diuresis_alta',
+        ];
     }
 
     public function update(Request $request, History $history)
