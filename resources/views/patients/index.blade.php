@@ -67,7 +67,8 @@
                             </td>
                             <td>
                                 <div class="small text-truncate" style="max-width: 180px;" x-text="patient.direccion || '---'"></div>
-                                <small class="text-muted small block" x-text="patient.procedencia || ''"></small>
+                                <small class="text-muted small d-block" x-text="patient.procedencia || ''"></small>
+                                <small class="text-muted small d-block" x-text="patientUbigeo(patient)"></small>
                             </td>
                             <td>
                                 <div class="small fw-semibold text-dark" x-text="patient.contacto_emergencia_nombre ? patient.contacto_emergencia_nombre : '---'"></div>
@@ -174,7 +175,34 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-secondary">Procedencia</label>
-                                <input type="text" name="procedencia" x-model="form.procedencia" class="form-control rounded-3" placeholder="Ej: Huancayo, El Tambo">
+                                <input type="text" name="procedencia" x-model="form.procedencia" class="form-control rounded-3" placeholder="Ej: Centro poblado o sector">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Departamento</label>
+                                <select id="patient_id_departamento" name="id_departamento" x-model="form.id_departamento" class="form-select rounded-3 select2-ubigeo" data-placeholder="Seleccione departamento" @change="onDepartamentoChange()">
+                                    <option value=""></option>
+                                    <template x-for="departamento in departamentos" :key="departamento.id_departamento">
+                                        <option :value="departamento.id_departamento" x-text="departamento.descripcion"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Provincia</label>
+                                <select id="patient_id_provincia" name="id_provincia" x-model="form.id_provincia" class="form-select rounded-3 select2-ubigeo" data-placeholder="Seleccione provincia" @change="onProvinciaChange()">
+                                    <option value=""></option>
+                                    <template x-for="provincia in filteredProvincias()" :key="`${provincia.id_departamento}-${provincia.id_provincia}`">
+                                        <option :value="provincia.id_provincia" x-text="provincia.descripcion"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Distrito</label>
+                                <select id="patient_id_distrito" name="id_distrito" x-model="form.id_distrito" class="form-select rounded-3 select2-ubigeo" data-placeholder="Seleccione distrito">
+                                    <option value=""></option>
+                                    <template x-for="distrito in filteredDistritos()" :key="`${distrito.id_departamento}-${distrito.id_provincia}-${distrito.id_distrito}`">
+                                        <option :value="distrito.id_distrito" x-text="distrito.descripcion"></option>
+                                    </template>
+                                </select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-secondary">Grado Instrucción</label>
@@ -254,12 +282,15 @@
             page: 1,
             perPage: 10,
             patientsList: @json($patients ?? []),
+            departamentos: @json($departamentos ?? []),
+            provincias: @json($provincias ?? []),
+            distritos: @json($distritos ?? []),
 
             isEdit: false,
             modalInstance: null,
             form: {
                 id: '', nombre: '', dni: '', fecha_nacimiento: '', sexo: 'M', telefono: '',
-                procedencia: '', direccion: '', instruccion: '', civil: '',
+                procedencia: '', id_departamento: '', id_provincia: '', id_distrito: '', direccion: '', instruccion: '', civil: '',
                 financiador: 'SIS', codigo_seguro: '',
                 contacto_emergencia_nombre: '', contacto_emergencia_dni: '',
                 contacto_emergencia_parentesco: '', contacto_emergencia_telefono: ''
@@ -270,6 +301,73 @@
                 if (modalEl && typeof bootstrap !== 'undefined') {
                     this.modalInstance = new bootstrap.Modal(modalEl);
                 }
+            },
+
+            filteredProvincias() {
+                return this.provincias.filter(provincia => provincia.id_departamento === this.form.id_departamento);
+            },
+
+            filteredDistritos() {
+                return this.distritos.filter(distrito => {
+                    return distrito.id_departamento === this.form.id_departamento &&
+                           distrito.id_provincia === this.form.id_provincia;
+                });
+            },
+
+            onDepartamentoChange() {
+                this.form.id_provincia = '';
+                this.form.id_distrito = '';
+                this.refreshSelect2Values();
+            },
+
+            onProvinciaChange() {
+                this.form.id_distrito = '';
+                this.refreshSelect2Values();
+            },
+
+            patientUbigeo(patient) {
+                const parts = [patient.departamento?.descripcion, patient.provincia?.descripcion, patient.distrito?.descripcion].filter(Boolean);
+                return parts.length ? parts.join(' / ') : '';
+            },
+
+            initSelect2() {
+                if (typeof $ === 'undefined' || !$.fn.select2) return;
+
+                this.$nextTick(() => {
+                    $('.select2-ubigeo').each((_, element) => {
+                        const $element = $(element);
+                        if (!$element.data('select2')) {
+                            $element.select2({
+                                theme: 'bootstrap-5',
+                                dropdownParent: $('#crudPatientModal'),
+                                width: '100%',
+                                allowClear: true,
+                                placeholder: $element.data('placeholder') || 'Seleccione una opción'
+                            }).on('change', () => {
+                                this.form[element.name] = $element.val() || '';
+
+                                if (element.name === 'id_departamento') {
+                                    this.onDepartamentoChange();
+                                }
+
+                                if (element.name === 'id_provincia') {
+                                    this.onProvinciaChange();
+                                }
+                            });
+                        }
+
+                        $element.val(this.form[element.name] || '').trigger('change.select2');
+                    });
+                });
+            },
+
+            refreshSelect2Values() {
+                this.$nextTick(() => {
+                    if (typeof $ === 'undefined' || !$.fn.select2) return;
+                    $('#patient_id_departamento').val(this.form.id_departamento || '').trigger('change.select2');
+                    $('#patient_id_provincia').val(this.form.id_provincia || '').trigger('change.select2');
+                    $('#patient_id_distrito').val(this.form.id_distrito || '').trigger('change.select2');
+                });
             },
 
             filteredPatients() {
@@ -298,12 +396,13 @@
                 this.isEdit = false;
                 this.form = {
                     id: '', nombre: '', dni: '', fecha_nacimiento: '', sexo: 'M', telefono: '',
-                    procedencia: '', direccion: '', instruccion: '', civil: '',
+                    procedencia: '', id_departamento: '', id_provincia: '', id_distrito: '', direccion: '', instruccion: '', civil: '',
                     financiador: 'SIS', codigo_seguro: '',
                     contacto_emergencia_nombre: '', contacto_emergencia_dni: '',
                     contacto_emergencia_parentesco: '', contacto_emergencia_telefono: ''
                 };
                 if (this.modalInstance) this.modalInstance.show();
+                this.initSelect2();
             },
 
             openEdit(patient) {
@@ -312,6 +411,7 @@
                     fecha_nacimiento: this.normalizeDate(patient.fecha_nacimiento)
                 });
                 if (this.modalInstance) this.modalInstance.show();
+                this.initSelect2();
             },
 
             deletePatient(id, name) {

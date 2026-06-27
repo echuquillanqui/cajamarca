@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Patient extends Model
@@ -15,6 +16,24 @@ class Patient extends Model
     protected $casts = [
         'fecha_nacimiento' => 'date:Y-m-d',
     ];
+
+    public function departamento(): BelongsTo
+    {
+        return $this->belongsTo(Departamento::class, 'id_departamento', 'id_departamento');
+    }
+
+    public function provincia(): BelongsTo
+    {
+        return $this->belongsTo(Provincia::class, 'id_provincia', 'id_provincia')
+            ->where('id_departamento', $this->id_departamento);
+    }
+
+    public function distrito(): BelongsTo
+    {
+        return $this->belongsTo(Distrito::class, 'id_distrito', 'id_distrito')
+            ->where('id_departamento', $this->id_departamento)
+            ->where('id_provincia', $this->id_provincia);
+    }
 
     public function orders(): HasMany
     {
