@@ -168,7 +168,7 @@ class HistoryController extends Controller
         // 1. Validamos todos los campos incluyendo la estructura real proveniente de la grilla HTML
         $validatedData = $request->validate([
             'fecha_ingreso_hd'     => 'required|date',
-            'serv_origen'          => 'nullable|string|max:25',
+            'serv_origen'          => 'nullable|in:URO,TOPI,TOP 2,OBS,UCI,UCIN,URPA,MED,CIRUG,GIN,PED,UCIN-NEO,C. EXT,URCA',
             'cama'          => 'nullable|string|max:25',
             'tiempo_enfermedad'    => 'nullable|string|max:50',
             'inicio_enfermedad'    => 'nullable|string|max:50',

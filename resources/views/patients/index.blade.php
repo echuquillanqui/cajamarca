@@ -206,11 +206,32 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-secondary">Grado Instrucción</label>
-                                <input type="text" name="instruccion" x-model="form.instruccion" class="form-control rounded-3" placeholder="Ej: Superior Completa">
+                                <select name="instruccion" x-model="form.instruccion" class="form-select rounded-3">
+                                    <option value="">Seleccione grado de instrucción</option>
+                                    <option value="Sin instrucción">Sin instrucción</option>
+                                    <option value="Inicial">Inicial</option>
+                                    <option value="Primaria Incompleta">Primaria Incompleta</option>
+                                    <option value="Primaria Completa">Primaria Completa</option>
+                                    <option value="Secundaria Incompleta">Secundaria Incompleta</option>
+                                    <option value="Secundaria Completa">Secundaria Completa</option>
+                                    <option value="Técnica Incompleta">Técnica Incompleta</option>
+                                    <option value="Técnica Completa">Técnica Completa</option>
+                                    <option value="Superior Incompleta">Superior Incompleta</option>
+                                    <option value="Superior Completa">Superior Completa</option>
+                                    <option value="Postgrado">Postgrado</option>
+                                </select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-secondary">Estado Civil</label>
-                                <input type="text" name="civil" x-model="form.civil" class="form-control rounded-3" placeholder="Ej: Casado(a)">
+                                <select name="civil" x-model="form.civil" class="form-select rounded-3">
+                                    <option value="">Seleccione estado civil</option>
+                                    <option value="Soltero(a)">Soltero(a)</option>
+                                    <option value="Casado(a)">Casado(a)</option>
+                                    <option value="Conviviente">Conviviente</option>
+                                    <option value="Divorciado(a)">Divorciado(a)</option>
+                                    <option value="Separado(a)">Separado(a)</option>
+                                    <option value="Viudo(a)">Viudo(a)</option>
+                                </select>
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label small fw-bold text-secondary">Dirección de Domicilio Actual</label>

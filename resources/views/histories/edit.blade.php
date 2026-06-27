@@ -66,7 +66,12 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold text-secondary">Servicio de Origen</label>
-                                <input type="text" class="form-control" name="serv_origen" value="{{ old('serv_origen', $history->serv_origen) }}" maxlength="25">
+                                <select class="form-select" name="serv_origen">
+                                    <option value="">Seleccione servicio</option>
+                                    @foreach(['URO','TOPI','TOP 2','OBS','UCI','UCIN','URPA','MED','CIRUG','GIN','PED','UCIN-NEO','C. EXT','URCA'] as $servicio)
+                                        <option value="{{ $servicio }}" {{ old('serv_origen', $history->serv_origen) === $servicio ? 'selected' : '' }}>{{ $servicio }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold text-secondary">Cama</label>
