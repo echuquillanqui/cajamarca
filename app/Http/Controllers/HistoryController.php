@@ -273,6 +273,12 @@ class HistoryController extends Controller
         // 3. Forzamos la asignación dentro de los datos que van a guardarse de forma masiva
         $validatedData['antecedentes_personales'] = $antecedentesEstructurados;
 
+        // Si no se realizó biopsia, limpiamos los campos dependientes que se ocultan en el formulario.
+        if (! (bool) ($validatedData['biopsia_renal'] ?? false)) {
+            $validatedData['biopsia_renal_anio'] = null;
+            $validatedData['biopsia_renal_resultado'] = null;
+        }
+
         // 4. Eliminamos el parámetro temporal ant_data para que no cause conflictos con columnas fantasmas
         unset($validatedData['ant_data']);
 

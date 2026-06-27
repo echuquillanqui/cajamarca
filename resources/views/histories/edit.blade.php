@@ -220,6 +220,31 @@
             <input type="text" class="form-control" name="antecedentes_familiares" value="{{ old('antecedentes_familiares', $history->antecedentes_familiares) }}">
         </div>
     </div>
+
+    <div class="p-4 bg-light rounded-4 border mt-4">
+        <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
+            <h6 class="fw-bold text-primary mb-0">
+                <i class="fa-solid fa-vial-circle-check me-2"></i>Biopsia Renal
+            </h6>
+        </div>
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-bold text-secondary">¿Se realizó biopsia renal?</label>
+                <select class="form-select" name="biopsia_renal" x-model="tieneBiopsia">
+                    <option value="0">NO</option>
+                    <option value="1">SÍ</option>
+                </select>
+            </div>
+            <div class="col-md-3" x-show="tieneBiopsia === '1'" x-cloak>
+                <label class="form-label fw-bold text-secondary">Año</label>
+                <input type="text" class="form-control text-center" name="biopsia_renal_anio" value="{{ old('biopsia_renal_anio', $history->biopsia_renal_anio) }}" maxlength="4" placeholder="AAAA" :disabled="tieneBiopsia !== '1'">
+            </div>
+            <div class="col-md-6" x-show="tieneBiopsia === '1'" x-cloak>
+                <label class="form-label fw-bold text-secondary">Resultado</label>
+                <input type="text" class="form-control" name="biopsia_renal_resultado" value="{{ old('biopsia_renal_resultado', $history->biopsia_renal_resultado) }}" placeholder="Resultado de la biopsia" :disabled="tieneBiopsia !== '1'">
+            </div>
+        </div>
+    </div>
 </div>
 
                     <!-- PESTAÑA 3: ACCESOS VASCULARES (PRINCIPAL, SECUNDARIO Y OTROS) -->
@@ -401,6 +426,7 @@
 
 @push('styles')
 <style>
+    [x-cloak] { display: none !important; }
     .nav-pills .nav-link { color: var(--bs-secondary-color); background-color: transparent; transition: all 0.2s ease-in-out; }
     .nav-pills .nav-link.active { color: #ffffff !important; background-color: #014f86 !important; box-shadow: 0 4px 10px rgba(1, 79, 134, 0.2); }
     .form-control:focus, .form-select:focus { border-color: #014f86; box-shadow: 0 0 0 0.2px rgba(1, 79, 134, 0.25); }
