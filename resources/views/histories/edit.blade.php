@@ -1,12 +1,39 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4 py-3" x-data="{ 
-    tieneBiopsia: '{{ old('biopsia_renal', $history->biopsia_renal ? '1' : '0') }}',
-    tieneOtrosAccesos: '{{ old('o_tipos', $history->o_tipos) ? '1' : '0' }}',
-    enfCronica: '{{ old('enf_cronica', $history->enf_cronica ?? '') }}',
-    enfAguda: '{{ old('enf_aguda', $history->enf_aguda ?? '') }}'
-}">
+<div class="container-fluid px-4 py-3" x-data='{
+    tieneBiopsia: @js(old('biopsia_renal', $history->biopsia_renal ? '1' : '0')),
+    tieneOtrosAccesos: @js(old('o_tipos', $history->o_tipos) ? '1' : '0'),
+    enfCronica: @js(old('enf_cronica', $history->enf_cronica ?? '')),
+    descripCronica: @js(old('descrip1', $history->descrip1 ?? '')),
+    enfAguda: @js(old('enf_aguda', $history->enf_aguda ?? '')),
+    descripAguda: @js(old('descrip2', $history->descrip2 ?? '')),
+    descripcionesCronica: @js([
+        'G1' => 'Normal o elevado (TFG ≥ 90 ml/min/1.73 m²)',
+        'G2' => 'Ligeramente disminuido (TFG 60-89 ml/min/1.73 m²)',
+        'G3a' => 'Ligera a moderadamente disminuido (TFG 45-59 ml/min/1.73 m²)',
+        'G3b' => 'Moderada a gravemente disminuido (TFG 30-44 ml/min/1.73 m²)',
+        'G4' => 'Gravemente disminuido (TFG 15-29 ml/min/1.73 m²)',
+        'G5' => 'Fallo renal (TFG < 15 ml/min/1.73 m²)',
+        'A1' => 'Normal a ligeramente elevada (< 30 mg/g)',
+        'A2' => 'Moderadamente elevada (30-300 mg/g)',
+        'A3' => 'Gravemente elevada (> 300 mg/g)',
+    ]),
+    descripcionesAguda: @js([
+        'C0' => 'Creatinina sérica: sin criterios',
+        'C1' => 'Creatinina sérica: aumento ≥ 0.3 mg/dl o 1.5-1.9 veces el basal',
+        'C2' => 'Creatinina sérica: 2-2.9 veces el basal',
+        'C3' => 'Creatinina sérica: ≥ 3 veces el basal o ≥ 4.0 mg/dl o inicio de terapia de reemplazo renal (TRR)',
+        'U0' => 'Diuresis: ≥ 0.5 ml/kg/h',
+        'U1' => 'Diuresis: < 0.5 ml/kg/h durante 6-12 h',
+        'U2' => 'Diuresis: < 0.5 ml/kg/h durante > 12 h',
+        'U3' => 'Diuresis: < 0.3 ml/kg/h durante > 24 h o anuria > 12 h',
+        'B0' => 'Biomarcador de daño renal: negativo',
+        'B1' => 'Biomarcador de daño renal: positivo',
+    ]),
+    actualizarDescripcionCronica() { this.descripCronica = this.descripcionesCronica[this.enfCronica] || ''; },
+    actualizarDescripcionAguda() { this.descripAguda = this.descripcionesAguda[this.enfAguda] || ''; }
+}'>
     
     <div class="mb-3">
         <a href="{{ route('histories.index') }}" class="text-decoration-none text-secondary small fw-semibold">
@@ -384,14 +411,14 @@
                         <div class="row g-3 mb-3">
                             <div class="col-md-6 border-end">
                                 <h6 class="fw-bold text-warning mb-2">Enfermedad Renal Crónica (ERC)</h6>
-                                <div class="mb-2"><label class="form-label small text-muted mb-0">Estadio (G/A)</label><select class="form-select" name="enf_cronica" x-model="enfCronica"><option value="">N/A</option><option value="G">Grado G</option><option value="A">Grado A</option></select></div>
-                                <div class="mb-2"><label class="form-label small text-muted mb-0">Descripción</label><input type="text" class="form-control" name="descrip1" value="{{ old('descrip1', $history->descrip1) }}"></div>
+                                <div class="mb-2"><label class="form-label small text-muted mb-0">Estadio (G/A)</label><select class="form-select" name="enf_cronica" x-model="enfCronica" @change="actualizarDescripcionCronica()"><option value="">N/A</option><optgroup label="Filtrado glomerular (G)"><option value="G1">G1</option><option value="G2">G2</option><option value="G3a">G3a</option><option value="G3b">G3b</option><option value="G4">G4</option><option value="G5">G5</option></optgroup><optgroup label="Albuminuria (A)"><option value="A1">A1</option><option value="A2">A2</option><option value="A3">A3</option></optgroup></select></div>
+                                <div class="mb-2"><label class="form-label small text-muted mb-0">Descripción</label><input type="text" class="form-control" name="descrip1" x-model="descripCronica" readonly></div>
                                 <div><label class="form-label small text-muted mb-0">Etiología de Cronicidad</label><input type="text" class="form-control" name="etiologia_cronica" value="{{ old('etiologia_cronica', $history->etiologia_cronica) }}"></div>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="fw-bold text-danger mb-2">Lesión Renal Aguda (LRA)</h6>
-                                <div class="mb-2"><label class="form-label small text-muted mb-0">Estadio KDIGO</label><select class="form-select" name="enf_aguda" x-model="enfAguda"><option value="">N/A</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
-                                <div class="mb-2"><label class="form-label small text-muted mb-0">Descripción</label><input type="text" class="form-control" name="descrip2" value="{{ old('descrip2', $history->descrip2) }}"></div>
+                                <div class="mb-2"><label class="form-label small text-muted mb-0">Estadio KDIGO</label><select class="form-select" name="enf_aguda" x-model="enfAguda" @change="actualizarDescripcionAguda()"><option value="">N/A</option><optgroup label="Creatinina sérica"><option value="C0">C0</option><option value="C1">C1</option><option value="C2">C2</option><option value="C3">C3</option></optgroup><optgroup label="Diuresis"><option value="U0">U0</option><option value="U1">U1</option><option value="U2">U2</option><option value="U3">U3</option></optgroup><optgroup label="Biomarcador de daño renal"><option value="B0">B0</option><option value="B1">B1</option></optgroup></select></div>
+                                <div class="mb-2"><label class="form-label small text-muted mb-0">Descripción</label><input type="text" class="form-control" name="descrip2" x-model="descripAguda" readonly></div>
                                 <div><label class="form-label small text-muted mb-0">Etiología Aguda</label><input type="text" class="form-control" name="etiologia_aguda" value="{{ old('etiologia_aguda', $history->etiologia_aguda) }}"></div>
                             </div>
                         </div>

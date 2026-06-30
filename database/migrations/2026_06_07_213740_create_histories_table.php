@@ -95,12 +95,12 @@ return new class extends Migration
             $table->string('otras_vacunas', 200)->nullable();
 
             // Diagnósticos e Injurias Renales
-            $table->enum('enf_cronica', ['G', 'A'])->nullable();
-            $table->string('descrip1', 50)->nullable();
+            $table->enum('enf_cronica', ['G1', 'G2', 'G3a', 'G3b', 'G4', 'G5', 'A1', 'A2', 'A3'])->nullable();
+            $table->string('descrip1', 255)->nullable();
             $table->string('etiologia_cronica', 200)->nullable();
 
-            $table->enum('enf_aguda', ['1', '2', '3'])->nullable();
-            $table->string('descrip2', 50)->nullable();
+            $table->enum('enf_aguda', ['C0', 'C1', 'C2', 'C3', 'U0', 'U1', 'U2', 'U3', 'B0', 'B1'])->nullable();
+            $table->string('descrip2', 255)->nullable();
             $table->string('etiologia_aguda', 200)->nullable();
             
             $table->text('motivo_hospt_act')->nullable();

@@ -238,11 +238,11 @@ class HistoryController extends Controller
             'otras_vacunas'        => 'nullable|string|max:200',
 
             // Diagnósticos Categorizados
-            'enf_cronica'          => 'nullable|in:G,A',
-            'descrip1'             => 'nullable|string|max:50',
+            'enf_cronica'          => 'nullable|in:G1,G2,G3a,G3b,G4,G5,A1,A2,A3',
+            'descrip1'             => 'nullable|string|max:255',
             'etiologia_cronica'    => 'nullable|string|max:200',
-            'enf_aguda'            => 'nullable|in:1,2,3',
-            'descrip2'             => 'nullable|string|max:50',
+            'enf_aguda'            => 'nullable|in:C0,C1,C2,C3,U0,U1,U2,U3,B0,B1',
+            'descrip2'             => 'nullable|string|max:255',
             'etiologia_aguda'      => 'nullable|string|max:200',
             'motivo_hospt_act'     => 'nullable|string',
 

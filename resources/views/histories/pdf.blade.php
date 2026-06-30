@@ -607,7 +607,7 @@
         </tr>
         <tr>
             <td><span class="bold">LESIÓN RENAL AGUDA (Etiología):</span> <span class="filled-data">{{ $history->etiologia_aguda ?? '-' }}</span></td>
-            <td style="text-align: center;"><span class="bold">ESTADIO (1/2/3):</span> <span class="filled-data">{{ $history->enf_aguda ?? '-' }}</span></td>
+            <td style="text-align: center;"><span class="bold">ESTADIO KDIGO:</span> <span class="filled-data">{{ $history->enf_aguda ?? '-' }}</span></td>
         </tr>
         <tr>
             <td colspan="2"><span class="bold">MOTIVO DE INGRESO A HEMODIÁLISIS HOSPITALIZACIÓN ACTUAL:</span><br><span class="filled-data" style="text-transform:none;">{{ $history->motivo_hospt_act ?? '-' }}</span></td>
