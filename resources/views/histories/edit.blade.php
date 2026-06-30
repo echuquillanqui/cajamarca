@@ -105,6 +105,10 @@
                                 <input type="text" class="form-control" name="cama" value="{{ old('cama', $history->cama) }}" maxlength="25">
                             </div>
                             <div class="col-md-3">
+                                <label class="form-label fw-bold text-secondary">Tiempo de Enfermedad</label>
+                                <input type="text" class="form-control" name="tiempo_enfermedad" value="{{ old('tiempo_enfermedad', $history->tiempo_enfermedad) }}" maxlength="50" placeholder="Ej: 3 días / 2 semanas">
+                            </div>
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold text-secondary">Inicio</label>
                                 <input type="text" class="form-control" name="inicio_enfermedad" value="{{ old('inicio_enfermedad', $history->inicio_enfermedad) }}" placeholder="Súbito / Insidioso">
                             </div>
@@ -362,6 +366,7 @@
                             <div class="col-md-2"><label class="form-label small text-muted mb-1">SatO₂ (%)</label><input type="number" class="form-control" name="sat_o2" value="{{ old('sat_o2', $history->sat_o2) }}"></div>
                             <div class="col-md-2"><label class="form-label small text-muted mb-1">Peso (Kg)</label><input type="number" step="0.01" class="form-control" name="peso_ingreso" value="{{ old('peso_ingreso', $history->peso_ingreso) }}"></div>
                             <div class="col-md-2"><label class="form-label small text-muted mb-1">Talla (m)</label><input type="number" step="0.01" class="form-control" name="talla_ingreso" value="{{ old('talla_ingreso', $history->talla_ingreso) }}"></div>
+                            <div class="col-md-2"><label class="form-label small text-muted mb-1">FiO₂ (%)</label><input type="number" step="0.01" class="form-control" name="fio" value="{{ old('fio', $history->fio) }}"></div>
                         </div>
 
                         <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-stethoscope me-2"></i>Evaluación de Sistemas Completa</h6>
@@ -464,4 +469,62 @@
     }
 }
 </style>
+@endpush
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const descripcionCronica = @json([
+            'G1' => 'Normal o elevado (TFG ≥ 90 ml/min/1.73 m²)',
+            'G2' => 'Ligeramente disminuido (TFG 60-89 ml/min/1.73 m²)',
+            'G3a' => 'Ligera a moderadamente disminuido (TFG 45-59 ml/min/1.73 m²)',
+            'G3b' => 'Moderada a gravemente disminuido (TFG 30-44 ml/min/1.73 m²)',
+            'G4' => 'Gravemente disminuido (TFG 15-29 ml/min/1.73 m²)',
+            'G5' => 'Fallo renal (TFG < 15 ml/min/1.73 m²)',
+            'A1' => 'Normal a ligeramente elevada (< 30 mg/g)',
+            'A2' => 'Moderadamente elevada (30-300 mg/g)',
+            'A3' => 'Gravemente elevada (> 300 mg/g)',
+        ]);
+        const descripcionAguda = @json([
+            'C0' => 'Creatinina sérica: sin criterios',
+            'C1' => 'Creatinina sérica: aumento ≥ 0.3 mg/dl o 1.5-1.9 veces el basal',
+            'C2' => 'Creatinina sérica: 2-2.9 veces el basal',
+            'C3' => 'Creatinina sérica: ≥ 3 veces el basal o ≥ 4.0 mg/dl o inicio de terapia de reemplazo renal (TRR)',
+            'U0' => 'Diuresis: ≥ 0.5 ml/kg/h',
+            'U1' => 'Diuresis: < 0.5 ml/kg/h durante 6-12 h',
+            'U2' => 'Diuresis: < 0.5 ml/kg/h durante > 12 h',
+            'U3' => 'Diuresis: < 0.3 ml/kg/h durante > 24 h o anuria > 12 h',
+            'B0' => 'Biomarcador de daño renal: negativo',
+            'B1' => 'Biomarcador de daño renal: positivo',
+        ]);
+
+        const valoresIniciales = {
+            enf_cronica: @json(old('enf_cronica', $history->enf_cronica ?? '')),
+            enf_aguda: @json(old('enf_aguda', $history->enf_aguda ?? '')),
+        };
+
+        const bindDescripcion = (selectName, inputName, descripciones) => {
+            const select = document.querySelector(`[name="${selectName}"]`);
+            const input = document.querySelector(`[name="${inputName}"]`);
+
+            if (!select || !input) {
+                return;
+            }
+
+            if (valoresIniciales[selectName]) {
+                select.value = valoresIniciales[selectName];
+            }
+
+            const actualizar = () => {
+                input.value = descripciones[select.value] || '';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            };
+
+            actualizar();
+            select.addEventListener('change', actualizar);
+        };
+
+        bindDescripcion('enf_cronica', 'descrip1', descripcionCronica);
+        bindDescripcion('enf_aguda', 'descrip2', descripcionAguda);
+    });
+</script>
 @endpush
