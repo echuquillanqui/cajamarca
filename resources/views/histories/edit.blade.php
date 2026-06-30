@@ -471,31 +471,36 @@
 </style>
 @endpush
 @push('scripts')
+@php
+    $descripcionCronica = [
+        'G1' => 'Normal o elevado (TFG ≥ 90 ml/min/1.73 m²)',
+        'G2' => 'Ligeramente disminuido (TFG 60-89 ml/min/1.73 m²)',
+        'G3a' => 'Ligera a moderadamente disminuido (TFG 45-59 ml/min/1.73 m²)',
+        'G3b' => 'Moderada a gravemente disminuido (TFG 30-44 ml/min/1.73 m²)',
+        'G4' => 'Gravemente disminuido (TFG 15-29 ml/min/1.73 m²)',
+        'G5' => 'Fallo renal (TFG < 15 ml/min/1.73 m²)',
+        'A1' => 'Normal a ligeramente elevada (< 30 mg/g)',
+        'A2' => 'Moderadamente elevada (30-300 mg/g)',
+        'A3' => 'Gravemente elevada (> 300 mg/g)',
+    ];
+
+    $descripcionAguda = [
+        'C0' => 'Creatinina sérica: sin criterios',
+        'C1' => 'Creatinina sérica: aumento ≥ 0.3 mg/dl o 1.5-1.9 veces el basal',
+        'C2' => 'Creatinina sérica: 2-2.9 veces el basal',
+        'C3' => 'Creatinina sérica: ≥ 3 veces el basal o ≥ 4.0 mg/dl o inicio de terapia de reemplazo renal (TRR)',
+        'U0' => 'Diuresis: ≥ 0.5 ml/kg/h',
+        'U1' => 'Diuresis: < 0.5 ml/kg/h durante 6-12 h',
+        'U2' => 'Diuresis: < 0.5 ml/kg/h durante > 12 h',
+        'U3' => 'Diuresis: < 0.3 ml/kg/h durante > 24 h o anuria > 12 h',
+        'B0' => 'Biomarcador de daño renal: negativo',
+        'B1' => 'Biomarcador de daño renal: positivo',
+    ];
+@endphp
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const descripcionCronica = @json([
-            'G1' => 'Normal o elevado (TFG ≥ 90 ml/min/1.73 m²)',
-            'G2' => 'Ligeramente disminuido (TFG 60-89 ml/min/1.73 m²)',
-            'G3a' => 'Ligera a moderadamente disminuido (TFG 45-59 ml/min/1.73 m²)',
-            'G3b' => 'Moderada a gravemente disminuido (TFG 30-44 ml/min/1.73 m²)',
-            'G4' => 'Gravemente disminuido (TFG 15-29 ml/min/1.73 m²)',
-            'G5' => 'Fallo renal (TFG < 15 ml/min/1.73 m²)',
-            'A1' => 'Normal a ligeramente elevada (< 30 mg/g)',
-            'A2' => 'Moderadamente elevada (30-300 mg/g)',
-            'A3' => 'Gravemente elevada (> 300 mg/g)',
-        ]);
-        const descripcionAguda = @json([
-            'C0' => 'Creatinina sérica: sin criterios',
-            'C1' => 'Creatinina sérica: aumento ≥ 0.3 mg/dl o 1.5-1.9 veces el basal',
-            'C2' => 'Creatinina sérica: 2-2.9 veces el basal',
-            'C3' => 'Creatinina sérica: ≥ 3 veces el basal o ≥ 4.0 mg/dl o inicio de terapia de reemplazo renal (TRR)',
-            'U0' => 'Diuresis: ≥ 0.5 ml/kg/h',
-            'U1' => 'Diuresis: < 0.5 ml/kg/h durante 6-12 h',
-            'U2' => 'Diuresis: < 0.5 ml/kg/h durante > 12 h',
-            'U3' => 'Diuresis: < 0.3 ml/kg/h durante > 24 h o anuria > 12 h',
-            'B0' => 'Biomarcador de daño renal: negativo',
-            'B1' => 'Biomarcador de daño renal: positivo',
-        ]);
+        const descripcionCronica = @json($descripcionCronica);
+        const descripcionAguda = @json($descripcionAguda);
 
         const valoresIniciales = {
             enf_cronica: @json(old('enf_cronica', $history->enf_cronica ?? '')),
